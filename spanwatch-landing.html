@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMS Project Monitor — Heavy Movable Structures Project Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:       #1B365D;
+    --navy-deep:  #142844;
+    --steel:      #71B2C9;
+    --coral:      #E5554F;
+    --coral-dark: #C9433D;
+    --mint:       #91D6AC;
+    --charcoal:   #373A36;
+    --white:      #FFFFFF;
+    --off-white:  #F6F7F8;
+    --line:       #E4E7E9;
+    --text-muted: #6B7178;
+    --card-bg:    #FFFFFF;
+    --card-border:#E4E7E9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--white); color: var(--charcoal); overflow-x: hidden; }
+  h1, h2, h3, .heading-font { font-family: 'Barlow Condensed', sans-serif; }
+
+  nav {
+    position: relative; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    background: var(--white);
+    border-bottom: 3px solid var(--navy);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 16px; text-decoration: none; }
+  .nav-logo-img { height: 40px; width: auto; flex-shrink: 0; display: block; }
+  .nav-logo-text { display: flex; flex-direction: column; line-height: 1; padding-left: 16px; border-left: 2px solid var(--line); }
+  .nav-logo-text .word1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: 0.02em; color: var(--navy); text-transform: uppercase; }
+  .nav-logo-text .word2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.16em; color: var(--text-muted); text-transform: uppercase; }
+  .nav-cta {
+    border: 2px solid var(--navy); color: var(--navy); background: transparent;
+    padding: 10px 22px; border-radius: 0; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .nav-cta:hover { background: var(--navy); color: var(--white); }
+  .nav-cta.primary { background: var(--coral); border-color: var(--coral); color: var(--white); }
+  .nav-cta.primary:hover { background: var(--coral-dark); border-color: var(--coral-dark); }
+
+  /* HERO */
+  .hero { position: relative; min-height: 560px; display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; background: var(--navy); overflow: hidden; padding: 0 0 0 48px; }
+  .hero-content { position: relative; z-index: 2; max-width: 560px; padding: 70px 40px 70px 0; }
+  .hero-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mint); margin-bottom: 18px; }
+  .hero-title { font-weight: 700; font-size: 60px; line-height: 1.05; color: var(--steel); margin-bottom: 20px; text-transform: none; }
+  .hero-title .light { color: var(--white); font-weight: 500; }
+  .hero-subtitle { font-family: 'Montserrat', sans-serif; font-size: 17px; line-height: 1.6; color: rgba(255,255,255,0.78); max-width: 480px; margin: 0 0 34px; }
+  .hero-cta-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .hero-art { position: relative; z-index: 1; height: 100%; min-height: 560px; display: flex; align-items: center; justify-content: center; background: var(--navy-deep); overflow: hidden; }
+  .hero-art img { width: 100%; height: 100%; max-height: 560px; object-fit: cover; display: block; filter: saturate(0.85) contrast(1.05); }
+  .hero-art-overlay { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(20,40,68,0.78) 0%, rgba(20,40,68,0.32) 38%, rgba(20,40,68,0.12) 65%, rgba(229,85,79,0.10) 100%); pointer-events: none; }
+  .hero-art-credit { position: absolute; bottom: 10px; right: 14px; font-size: 10.5px; color: rgba(255,255,255,0.55); z-index: 2; }
+  .hero-art-credit a { color: rgba(255,255,255,0.7); text-decoration: none; }
+  .hero-art-credit a:hover { text-decoration: underline; }
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; padding-left: 24px; }
+    .hero-content { padding: 56px 24px 40px 0; max-width: 100%; }
+    .hero-art { min-height: 320px; }
+    .hero-title { font-size: 42px; }
+  }
+
+  .btn-primary {
+    display: inline-block; background: var(--coral); color: var(--white);
+    padding: 16px 38px; border-radius: 0; font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.04em;
+    border: 2px solid var(--coral); cursor: pointer;
+    text-decoration: none; transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .btn-primary:hover { background: var(--coral-dark); border-color: var(--coral-dark); }
+  .btn-secondary {
+    display: inline-block; background: transparent; color: var(--white);
+    padding: 16px 32px; border-radius: 0; font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.04em;
+    border: 2px solid rgba(255,255,255,0.5); text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
+
+  /* FEATURES */
+  .features-section { padding: 110px 24px 90px; background: var(--off-white); }
+  .section-head { text-align: center; max-width: 700px; margin: 0 auto 64px; }
+  .section-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); margin-bottom: 14px; }
+  .features-headline { font-weight: 600; font-size: 44px; color: var(--navy); margin-bottom: 16px; line-height: 1.15; }
+  .features-sub { font-family: 'Montserrat', sans-serif; font-size: 16px; color: var(--text-muted); line-height: 1.6; }
+
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1140px; margin: 0 auto; }
+  .feature-card {
+    background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 0;
+    border-top: 3px solid var(--steel);
+    padding: 34px 28px; transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  .feature-card:hover { border-top-color: var(--coral); transform: translateY(-5px); box-shadow: 0 12px 24px rgba(27,54,93,0.08); }
+  .feature-card svg { width: 30px; height: 30px; stroke: var(--coral); margin-bottom: 18px; }
+  .feature-card h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 21px; margin-bottom: 10px; color: var(--navy); }
+  .feature-card p { font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 14.5px; color: var(--text-muted); line-height: 1.55; }
+
+  @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px) { .features-grid { grid-template-columns: 1fr; } .hero-title { font-size: 42px; } .features-headline { font-size: 30px; } }
+
+  /* SOURCES SECTION */
+  .sources-section { background: var(--off-white); padding: 100px 24px; }
+  .sources-grid { max-width: 1100px; margin: 56px auto 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .source-row {
+    display: flex; gap: 16px; align-items: flex-start; padding: 22px 26px;
+    background: var(--card-bg); border: 1px solid var(--card-border); border-left: 3px solid var(--coral); border-radius: 0;
+  }
+  .source-row .tag {
+    flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--coral); margin-top: 7px;
+  }
+  .source-row h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 5px; color: var(--navy); }
+  .source-row p { font-family: 'Montserrat', sans-serif; font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+  @media (max-width: 800px) { .sources-grid { grid-template-columns: 1fr; } }
+
+  .source-row-links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 3px 10px; }
+  .source-row-links a { font-family: 'Montserrat', sans-serif; font-size: 11.5px; color: var(--steel); text-decoration: none; }
+  .source-row-links a:hover { color: var(--coral-dark); text-decoration: underline; }
+  .source-row-links a:not(:last-of-type)::after { content: " ·"; color: var(--line); margin-left: 6px; }
+
+  .source-list-wrap { max-width: 1100px; margin: 64px auto 0; border-top: 1px solid var(--line); padding-top: 40px; }
+  .source-list-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
+  .source-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 40px; }
+  .source-list-row { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.5; }
+  .source-list-row .src-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; color: var(--navy); flex-shrink: 0; min-width: 100%; margin-bottom: 1px; }
+  .source-list-row a { color: var(--text-muted); text-decoration: none; word-break: break-all; }
+  .source-list-row a:hover { color: var(--coral-dark); text-decoration: underline; }
+  .source-list-row a:not(:last-of-type)::after { content: " ·"; color: var(--line); margin-left: 6px; }
+  @media (max-width: 800px) { .source-list { grid-template-columns: 1fr; } }
+
+  /* FIRMS STRIP */
+  .firms-section { background: var(--white); padding: 80px 24px; }
+  .firms-section .section-head { margin-bottom: 48px; text-align: center; }
+  .firms-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .firm-card { background: var(--off-white); border: 1px solid var(--line); border-left: 3px solid var(--steel); padding: 18px 20px; }
+  .firm-card-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; color: var(--navy); margin-bottom: 8px; }
+  .firm-type-badge { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; margin-bottom: 10px; }
+  .firm-type-badge.design { background: rgba(113,178,201,0.15); color: var(--navy); border: 1px solid rgba(113,178,201,0.4); }
+  .firm-type-badge.construction { background: rgba(229,85,79,0.10); color: var(--coral-dark); border: 1px solid rgba(229,85,79,0.3); }
+  .firm-card-desc { font-family: 'Montserrat', sans-serif; font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+  .firm-card-name a { color: var(--navy); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
+  .firm-card-name a:hover { color: var(--coral-dark); border-bottom-color: var(--coral-dark); }
+  @media (max-width: 900px) { .firms-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .firms-grid { grid-template-columns: 1fr; } }
+
+  /* CLOSING CTA */
+  .closing-section { padding: 130px 24px; text-align: center; background: var(--navy); position: relative; overflow: hidden; }
+  .closing-glow { position: absolute; top: 50%; left: 50%; width: 600px; height: 300px; transform: translate(-50%,-50%); background: radial-gradient(ellipse 400px 200px at 50% 50%, rgba(229,85,79,0.18), transparent); pointer-events: none; }
+  .closing-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+  .closing-headline { font-weight: 700; font-size: 50px; color: var(--white); margin-bottom: 18px; line-height: 1.15; }
+  .closing-headline em { color: var(--steel); font-style: normal; }
+  .closing-sub { font-family: 'Montserrat', sans-serif; font-size: 17px; color: rgba(255,255,255,0.75); margin-bottom: 36px; line-height: 1.6; }
+
+  footer { background: var(--navy-deep); padding: 40px 24px; text-align: center; border-top: 1px solid rgba(113,178,201,0.2); }
+  footer p { font-family: 'Montserrat', sans-serif; font-size: 13px; color: rgba(255,255,255,0.6); }
+
+  /* PASSWORD GATE */
+  #pw-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--navy-deep);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0;
+  }
+  #pw-gate.hidden { display: none; }
+  .pw-logo-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 40px; }
+  .pw-logo-img { height: 36px; width: auto; background: #fff; padding: 5px 10px; }
+  .pw-logo-text { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.04em; color: #fff; }
+  .pw-logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); display: inline-block; margin: 0 6px 2px; }
+  .pw-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 42px 48px;
+    max-width: 380px; width: 90%;
+    text-align: center;
+  }
+  .pw-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel);
+    margin-bottom: 10px;
+  }
+  .pw-headline {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px;
+    color: #fff; margin-bottom: 28px; line-height: 1.25;
+  }
+  .pw-input {
+    width: 100%; padding: 12px 16px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-family: 'Montserrat', sans-serif; font-size: 15px;
+    letter-spacing: 0.12em; text-align: center;
+    outline: none; margin-bottom: 14px;
+  }
+  .pw-input::placeholder { color: rgba(255,255,255,0.35); letter-spacing: 0.08em; }
+  .pw-input:focus { border-color: var(--steel); background: rgba(255,255,255,0.12); }
+  .pw-btn {
+    width: 100%; padding: 13px;
+    background: var(--coral); border: none; color: #fff;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: background .15s;
+  }
+  .pw-btn:hover { background: var(--coral-dark); }
+  .pw-error {
+    font-family: 'Montserrat', sans-serif; font-size: 12px;
+    color: var(--coral); margin-top: 12px; min-height: 16px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://stdlocknut.com/" class="nav-logo">
+    <img class="nav-logo-img" src="https://stdlocknut.com/staging/wp-content/uploads/2024/08/logo-sln.png" alt="Standard Locknut">
+    <div class="nav-logo-text">
+      <span class="word1">HMS</span>
+      <span class="word2">Project Monitor</span>
+    </div>
+  </a>
+  <div style="display:flex; gap:12px; align-items:center;">
+    <a href="spanwatch-dashboard.html" class="nav-cta">Live Dashboard →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Heavy Movable Structures Intelligence</div>
+    <h1 class="hero-title">The <span class="light">HMS</span><br>Project Monitor</h1>
+    <p class="hero-subtitle">Continuously tracking planning, procurement, and design activity for all types of heavy movable structure projects — and exactly which engineering firms are involved.</p>
+    <div class="hero-cta-row">
+      <a href="spanwatch-dashboard.html" class="btn-primary">View Live Dashboard</a>
+      <a href="#sources" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+
+  <div class="hero-art">
+    <img src="drawbridge%20photo.jpg" alt="Bascule drawbridge with both leaves raised, boats passing through the open channel">
+    <div class="hero-art-overlay"></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="section-head">
+    <div class="section-eyebrow">What HMS Project Monitor Does</div>
+    <h2 class="features-headline">From first planning signal<br>to firm on the job.</h2>
+    <p class="features-sub">One feed, updated daily, covering the entire lifecycle of every heavy movable structure project in motion.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <h3>Continuous Monitoring</h3>
+      <p>State DOT lettings, FHWA funding actions, USCG bridge permits, and trade publications are scanned on an ongoing basis — not a one-time snapshot.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg>
+      <h3>Earliest Planning Signals</h3>
+      <p>Surface projects at the capital-improvement-plan and pre-RFP stage — long before they appear in a standard bid notice.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="7" r="3"/><path d="M2 21v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2"/><path d="M16 14a5 5 0 0 1 5 5v2"/></svg>
+      <h3>Engineering Firm Tracking</h3>
+      <p>Know who's leading the design — and who else is competing — with firm history on similar structure types.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <h3>Every Structure Type</h3>
+      <p>Bascule, vertical lift, swing, retractable/folding, and other heavy movable structures — across highway, rail, and pedestrian crossings.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <h3>Scheduled Alerts</h3>
+      <p>A recurring digest flags new projects and material status changes the moment they're detected — delivered on your schedule.</p>
+    </div>
+    <div class="feature-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92V19a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 1h2.09a2 2 0 0 1 2 1.72c.13 1 .35 1.97.65 2.91a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l2.17-1.27a2 2 0 0 1 2.11-.45c.94.3 1.91.52 2.91.65A2 2 0 0 1 22 16.92z"/></svg>
+      <h3>Direct Firm Contacts</h3>
+      <p>Each project links to the responsible engineering contact — so outreach starts the day the opportunity surfaces, not after the RFP closes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section class="sources-section" id="sources">
+  <div class="section-head">
+    <div class="section-eyebrow">Where The Signal Comes From</div>
+    <h2 class="features-headline">No single source tells<br>the whole story. We watch all of them.</h2>
+    <p class="features-sub">Heavy movable projects intelligence is scattered across symposia, federal registers, state lettings, and maritime permitting. HMS Project Monitor consolidates over 30 different sources into one feed.</p>
+  </div>
+
+  <div class="sources-grid">
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Heavy Movable Structures, Inc.</h4><p>The biennial Movable Bridge Symposium and its technical paper archive name owners, designers, and project specifics years ahead of construction.</p>
+      <div class="source-row-links"><a href="https://heavymovablestructures.org/symposium/" target="_blank" rel="noopener">heavymovablestructures.org/symposium</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>U.S. Coast Guard Bridge Program</h4><p>Any new or altered bridge over a navigable waterway requires a USCG permit — one of the earliest public signals a project exists.</p>
+      <div class="source-row-links"><a href="https://www.dco.uscg.mil/Office-of-Bridge-Programs/" target="_blank" rel="noopener">dco.uscg.mil/Office-of-Bridge-Programs</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>State DOT Letting &amp; Bid Systems</h4><p>NYSDOT, TxDOT, FDOT, LADOTD, IDOT and other state letting calendars publish upcoming construction contracts, including movable spans.</p>
+      <div class="source-row-links"><a href="https://www.dot.ny.gov/doing-business/opportunities/const-notices" target="_blank" rel="noopener">NYSDOT</a><a href="https://www.txdot.gov/business/road-bridge-maintenance/contract-letting.html" target="_blank" rel="noopener">TxDOT</a><a href="https://www.fdot.gov/contracts/lettings/letting-project-info.shtm" target="_blank" rel="noopener">FDOT</a><a href="https://wwwsp.dotd.la.gov/Inside_LaDOTD/Divisions/Engineering/Construction/Pages/Bid_Lettings.aspx" target="_blank" rel="noopener">LADOTD</a><a href="https://idot.illinois.gov/doing-business/letting-bid-info.html" target="_blank" rel="noopener">IDOT</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>FHWA Bridge Programs &amp; NBI</h4><p>The Bridge Investment Program and National Bridge Inventory flag funded replacements and condition-driven projects nationwide.</p>
+      <div class="source-row-links"><a href="https://www.fhwa.dot.gov/bridge/nbi.cfm" target="_blank" rel="noopener">fhwa.dot.gov/bridge/nbi</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>County &amp; Municipal Capital Plans</h4><p>Multi-year capital improvement plans (like county bridge replacement programs) disclose movable structure projects well before bidding.</p>
+      <div class="source-row-links"><a href="https://www.capemaycountynj.gov/601/Department-of-Engineering" target="_blank" rel="noopener">Cape May County, NJ</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>ENR &amp; Dodge Construction Network</h4><p>Engineering News-Record's Top Design Firms rankings and Dodge's pre-planning project data track who's designing what, and where.</p>
+      <div class="source-row-links"><a href="https://www.enr.com/" target="_blank" rel="noopener">enr.com</a><a href="https://www.construction.com/" target="_blank" rel="noopener">construction.com</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Trade &amp; Engineering Publications</h4><p>Roads &amp; Bridges, Bridge Design &amp; Engineering, and regional construction trades cover awards and design milestones as they happen.</p>
+      <div class="source-row-links"><a href="https://www.roadsbridges.com/" target="_blank" rel="noopener">roadsbridges.com</a><a href="https://www.bridgeweb.com/" target="_blank" rel="noopener">bridgeweb.com</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Engineering Firm Newsrooms</h4><p>Direct monitoring of project-win announcements and staffing moves from the specialist firms themselves.</p>
+      <div class="source-row-links"><a href="https://www.hardestyhanover.com/news/" target="_blank" rel="noopener">Hardesty &amp; Hanover</a><a href="https://modjeski.com/news/" target="_blank" rel="noopener">Modjeski and Masters</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>SAM.gov Federal Contract Opportunities</h4><p>Catches Army Corps of Engineers, federal lands, and military movable structure work that never appears in state DOT letting systems.</p>
+      <div class="source-row-links"><a href="https://sam.gov/opportunities" target="_blank" rel="noopener">sam.gov/opportunities</a><a href="https://www.usace.army.mil/Business-With-Us/Small-Business/Upcoming-Contract-Opportunities/" target="_blank" rel="noopener">USACE opportunities</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>USACE Civil Works (Locks &amp; Dam Gates)</h4><p>District-level navigation lock and dam gate rehabilitation programs are heavy movable structures categorized as civil works, not bridges — and tracked separately from highway sources.</p>
+      <div class="source-row-links"><a href="https://www.usace.army.mil/Missions/Civil-Works/Navigation-Locks/" target="_blank" rel="noopener">usace.army.mil/Navigation-Locks</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Class I Railroad Bridge Programs</h4><p>CSX, Norfolk Southern, Union Pacific, and BNSF own a large share of US swing and lift bridges, disclosed through STB filings and railroad capital programs rather than ENR or DOT lettings.</p>
+      <div class="source-row-links"><a href="https://www.stb.gov/" target="_blank" rel="noopener">stb.gov</a><a href="https://www.csx.com/index.cfm/about-us/safety/bridges/" target="_blank" rel="noopener">CSX bridges</a><a href="https://www.progressiverailroading.com/" target="_blank" rel="noopener">Progressive Railroading</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Port Authority Capital Plans</h4><p>Port authorities often own or co-fund movable bridges and flood gates near their channels, disclosed in multi-year capital plans distinct from county and municipal CIPs.</p>
+      <div class="source-row-links"><a href="https://www.panynj.gov/port-authority/en/about/capital-plan.html" target="_blank" rel="noopener">Port Authority of NY/NJ</a><a href="https://porthouston.com/" target="_blank" rel="noopener">Port of Houston</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>USACE Section 408 &amp; NEPA Filings</h4><p>Permission requests and environmental review filings often name project scope and design firm before a USCG bridge permit is filed.</p>
+      <div class="source-row-links"><a href="https://www.usace.army.mil/Missions/Civil-Works/Section408/" target="_blank" rel="noopener">usace.army.mil/Section408</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>State QBS Award Announcements</h4><p>Qualifications-Based Selection shortlists and awards for bridge design are posted on state procurement portals separately from construction lettings, catching the design firm assignment earlier.</p>
+      <div class="source-row-links"><a href="https://www.fdot.gov/programmanagement/contractsadmin/" target="_blank" rel="noopener">FDOT</a><a href="https://www.njtpa.org/" target="_blank" rel="noopener">NJTPA</a><a href="https://www.mass.gov/info-details/massdot-procurement" target="_blank" rel="noopener">MassDOT</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Flood Control &amp; Dam Gate Districts</h4><p>Water management districts and regional flood control agencies fund movable gate replacements on their own capital schedules, entirely outside any bridge-monitoring channel.</p>
+      <div class="source-row-links"><a href="https://www.sfwmd.gov/our-work/flood-control" target="_blank" rel="noopener">South Florida WMD</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>USDOT Discretionary Grant Awards</h4><p>Bridge Investment Program, INFRA, Mega, and RAISE award announcements name specific movable bridge projects and dollar amounts the moment they're funded — often a year or more ahead of any letting.</p>
+      <div class="source-row-links"><a href="https://www.transportation.gov/briefing-room" target="_blank" rel="noopener">USDOT briefing room</a><a href="https://www.fhwa.dot.gov/bridge/bip/" target="_blank" rel="noopener">Bridge Investment Program</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Bridge &amp; Toll Commissions</h4><p>Agencies like the Burlington County Bridge Commission own and operate movable spans directly, with their own capital plans separate from state DOT systems.</p>
+      <div class="source-row-links"><a href="https://www.bcbridges.org/" target="_blank" rel="noopener">Burlington County Bridge Commission</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>Bureau of Reclamation</h4><p>The USACE counterpart for irrigation and hydroelectric dams in the western US — covers dam gate rehabilitation work outside USACE's own civil works program.</p>
+      <div class="source-row-links"><a href="https://www.usbr.gov/assetmanagement/dams.html" target="_blank" rel="noopener">usbr.gov/assetmanagement/dams</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>FRA CRISI Grant Awards</h4><p>Federal Railroad Administration discretionary grants increasingly fund rail bridge rehabilitation, a funding channel distinct from the Class I railroads' own capital disclosures.</p>
+      <div class="source-row-links"><a href="https://railroads.dot.gov/grants-loans/consolidated-rail-infrastructure-and-safety-improvements-crisi-program" target="_blank" rel="noopener">railroads.dot.gov/grants/crisi</a></div></div>
+    </div>
+    <div class="source-row">
+      <div class="tag"></div>
+      <div><h4>NSBA/AISC Prize Bridge Awards</h4><p>Biennial steel bridge awards name the owner, design firm, and fabricator for movable bridges — useful for backfilling projects that slipped past every other channel.</p>
+      <div class="source-row-links"><a href="https://www.aisc.org/nsba/prize-bridge-awards/" target="_blank" rel="noopener">aisc.org/nsba/prize-bridge-awards</a></div></div>
+    </div>
+  </div>
+
+
+</section>
+
+<!-- FIRMS -->
+<section class="firms-section">
+  <div class="section-head">
+    <div class="section-eyebrow">Firms In This Space</div>
+    <h2 class="features-headline">The specialists we track most closely</h2>
+  </div>
+  <div class="firms-grid">
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.hardestyhanover.com" target="_blank" rel="noopener">Hardesty &amp; Hanover</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">The nation's foremost dedicated movable bridge engineering firm, with a portfolio spanning virtually every movable span type and geographic market.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.modjeski.com" target="_blank" rel="noopener">Modjeski and Masters</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">One of the oldest and most storied bridge engineering firms in the U.S., with deep expertise in movable span design and long-term rehabilitation.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.burnsengineering.com" target="_blank" rel="noopener">Burns Engineering</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Specialist in movable bridge mechanical, electrical, and hydraulic (MEH) systems design — the mechanical engineering counterpart to the structural firms in this space.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.ammann-whitney.com" target="_blank" rel="noopener">Ammann &amp; Whitney</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Long-established bridge engineering firm with decades of movable span design and inspection work, particularly active in the Northeast.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.collinsengineers.com" target="_blank" rel="noopener">Collins Engineers</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Specialist in movable bridge inspection, load rating, and rehabilitation engineering, with one of the most experienced field teams in the country.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.wje.com" target="_blank" rel="noopener">WJE</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Forensic and structural engineering firm frequently retained for movable bridge condition assessment, failure analysis, and rehabilitation design.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.tylin.com" target="_blank" rel="noopener">T.Y. Lin International</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Major bridge engineering firm with a broad portfolio that includes movable span structures, particularly for transit and highway agencies.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.mbakerintl.com" target="_blank" rel="noopener">Michael Baker International</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Consistent movable bridge practice with strong geographic presence in the mid-Atlantic, Southeast, and Gulf Coast markets.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.hdrinc.com" target="_blank" rel="noopener">HDR</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Multi-discipline infrastructure firm active in movable bridge design and navigation lock rehabilitation, particularly in inland waterway and port markets.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.arcadis.com" target="_blank" rel="noopener">Arcadis</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Global design firm with specialized capabilities in large-scale flood control structures, surge barriers, and dam gates alongside movable bridge work.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.uni-systems.com" target="_blank" rel="noopener">Uni-Systems</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">The leading specialist in retractable stadium roofs and large-scale movable architectural structures, bringing HMS expertise beyond the waterway sector.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.hntb.com" target="_blank" rel="noopener">HNTB</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">National infrastructure firm with a substantial movable bridge practice, particularly strong in transit and highway corridor markets.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.aecom.com" target="_blank" rel="noopener">AECOM</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Global engineering firm with an active movable bridge and waterway infrastructure practice across multiple continents and project scales.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.wsp.com" target="_blank" rel="noopener">WSP</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Large multi-discipline firm with significant movable bridge, flood barrier, and waterway structure capabilities across North America and internationally.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.parsons.com" target="_blank" rel="noopener">Parsons</a></div>
+      <span class="firm-type-badge design">Design / Engineering</span>
+      <div class="firm-card-desc">Large civil engineering firm with active movable bridge and marine infrastructure projects across transportation and defense markets.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.cianbro.com" target="_blank" rel="noopener">Cianbro</a></div>
+      <span class="firm-type-badge construction">Construction</span>
+      <div class="firm-card-desc">The Northeast's most prominent movable bridge and marine contractor, with extensive experience in bascule, swing, and vertical lift bridge construction and rehabilitation.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.flatironcorp.com" target="_blank" rel="noopener">Flatiron Construction</a></div>
+      <span class="firm-type-badge construction">Construction</span>
+      <div class="firm-card-desc">Major national bridge contractor with a track record on complex movable span projects, particularly in urban and marine environments.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.kiewit.com" target="_blank" rel="noopener">Kiewit</a></div>
+      <span class="firm-type-badge construction">Construction</span>
+      <div class="firm-card-desc">One of the largest civil infrastructure contractors in North America, with movable bridge construction and navigation lock rehabilitation in its project history.</div>
+    </div>
+
+    <div class="firm-card">
+      <div class="firm-card-name"><a href="https://www.walshgroup.com" target="_blank" rel="noopener">Walsh Group</a></div>
+      <span class="firm-type-badge construction">Construction</span>
+      <div class="firm-card-desc">Large civil and bridge contractor with active movable bridge and marine civil construction work across the U.S.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="closing-section" id="access">
+  <div class="closing-glow"></div>
+  <div class="closing-content">
+    <h2 class="closing-headline">Be at the table before<br>the RFP is <em>public</em>.</h2>
+    <p class="closing-sub">Get the next heavy movable project information as soon as it's available.</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 HMS Project Monitor. Heavy movable structures project intelligence.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.set([".hero-eyebrow", ".hero-title", ".hero-subtitle", ".hero-cta-row", ".hero-art"], { opacity: 0, y: 30 });
+  const heroTl = gsap.timeline({ delay: 0.2 });
+  heroTl
+    .to(".hero-eyebrow", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" })
+    .to(".hero-title", { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, "-=0.3")
+    .to(".hero-subtitle", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.5")
+    .to(".hero-cta-row", { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, "-=0.4")
+    .to(".hero-art", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, "-=0.5");
+
+  gsap.set(".feature-card", { opacity: 0, y: 55, rotateX: 18, transformPerspective: 900, transformOrigin: "top center" });
+  gsap.to(".feature-card", {
+    scrollTrigger: { trigger: ".features-section", start: "top 68%", toggleActions: "play none none reverse" },
+    opacity: 1, y: 0, rotateX: 0, duration: 0.75, stagger: 0.11, ease: "power2.out"
+  });
+
+  gsap.from(".features-section .features-headline", {
+    scrollTrigger: { trigger: ".features-section", start: "top 72%" },
+    opacity: 0, y: 35, duration: 0.8, ease: "power3.out"
+  });
+
+  gsap.from(".sources-section .features-headline", {
+    scrollTrigger: { trigger: ".sources-section", start: "top 72%" },
+    opacity: 0, y: 35, duration: 0.8, ease: "power3.out"
+  });
+
+  gsap.set(".source-row", { opacity: 0, y: 30 });
+  gsap.to(".source-row", {
+    scrollTrigger: { trigger: ".sources-grid", start: "top 75%", toggleActions: "play none none reverse" },
+    opacity: 1, y: 0, duration: 0.6, stagger: 0.07, ease: "power2.out"
+  });
+
+  gsap.from(".firms-section .features-headline", {
+    scrollTrigger: { trigger: ".firms-section", start: "top 75%" },
+    opacity: 0, y: 30, duration: 0.7, ease: "power3.out"
+  });
+  gsap.set(".firm-card", { opacity: 0, y: 15 });
+  gsap.to(".firm-card", {
+    scrollTrigger: { trigger: ".firms-row", start: "top 80%", toggleActions: "play none none reverse" },
+    opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power2.out"
+  });
+
+  gsap.from(".closing-content", {
+    scrollTrigger: { trigger: ".closing-section", start: "top 72%" },
+    opacity: 0, y: 45, duration: 1.0, ease: "power3.out"
+  });
+</script>
+
+<!-- PASSWORD GATE -->
+<!-- To change the password, find 'HMS2026' below and replace it with your chosen password. -->
+<div id="pw-gate">
+  <div class="pw-logo-wrap">
+    <img class="pw-logo-img" src="https://stdlocknut.com/staging/wp-content/uploads/2024/08/logo-sln.png" alt="Standard Locknut">
+    <span class="pw-logo-text">HMS<span class="pw-logo-dot"></span>Project Monitor</span>
+  </div>
+  <div class="pw-box">
+    <div class="pw-title">Private Access</div>
+    <div class="pw-headline">Enter your<br>access password</div>
+    <input class="pw-input" id="pwInput" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="pw-btn" id="pwBtn">Enter</button>
+    <div class="pw-error" id="pwError"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const PASS = 'HMS2026'; // ← change this to update the password
+  const KEY  = 'hms_pw_granted';
+
+  function unlock() {
+    document.getElementById('pw-gate').classList.add('hidden');
+    sessionStorage.setItem(KEY, '1');
+  }
+
+  // Already unlocked this session?
+  if (sessionStorage.getItem(KEY) === '1') { unlock(); return; }
+
+  document.getElementById('pwBtn').addEventListener('click', attempt);
+  document.getElementById('pwInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') attempt();
+  });
+
+  function attempt() {
+    const val = document.getElementById('pwInput').value;
+    if (val === PASS) {
+      unlock();
+    } else {
+      const err = document.getElementById('pwError');
+      err.textContent = 'Incorrect password. Please try again.';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwInput').focus();
+      setTimeout(() => { err.textContent = ''; }, 3000);
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

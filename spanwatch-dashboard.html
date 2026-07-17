@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMS Project Monitor — Tracked Movable Bridge Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B365D; --navy-deep:#142844; --steel:#71B2C9; --coral:#E5554F; --coral-dark:#C9433D; --mint:#91D6AC;
+    --charcoal:#373A36; --off-white:#F6F7F8; --line:#E4E7E9;
+    --text-muted: #6B7178; --card-bg: #FFFFFF; --card-border: #E4E7E9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family:'Montserrat',sans-serif; background:var(--off-white); color:var(--charcoal); min-height:100vh; }
+
+  header { padding: 26px 40px; border-bottom: 1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; background: var(--navy); }
+  .brand { display:flex; align-items:center; gap:10px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:22px; text-transform:uppercase; letter-spacing:0.01em; color:#FFFFFF; }
+  .brand .dot { width:10px; height:10px; border-radius:50%; background:var(--coral); }
+  .brand-logo-wrap { background:#FFFFFF; padding:5px 10px; display:flex; align-items:center; }
+  .brand-logo { height:30px; width:auto; flex-shrink:0; display:block; }
+  .meta { font-size:13px; color: rgba(255,255,255,0.75); }
+  .meta b { color: var(--steel); }
+
+  .toolbar { padding: 24px 40px 0; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .toolbar input[type=text] {
+    background: #FFFFFF; border:1px solid var(--line); border-radius:0;
+    padding:10px 14px; color:var(--charcoal); font-family:'Montserrat',sans-serif; font-size:14px; min-width:220px;
+  }
+  .toolbar select {
+    background: #FFFFFF; border:1px solid var(--line); border-radius:0;
+    padding:10px 14px; color:var(--charcoal); font-family:'Montserrat',sans-serif; font-size:14px;
+  }
+  .toolbar .count { font-size:13px; color:var(--text-muted); }
+
+  .grid { padding: 24px 40px 80px; display:grid; grid-template-columns: repeat(auto-fill, minmax(360px,1fr)); gap:18px; }
+
+  .card { background: var(--card-bg); border:1px solid var(--card-border); border-top:3px solid var(--steel); border-radius:0; padding:24px; transition: border-color .2s, transform .2s, box-shadow .2s; }
+  .card:hover { border-top-color: var(--coral); transform: translateY(-3px); box-shadow: 0 12px 24px rgba(27,54,93,0.08); }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px; }
+  .card-title { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; line-height:1.3; color:var(--navy); }
+  .card-loc { font-size:13px; color:var(--text-muted); margin-top:3px; }
+  .badge { font-family:'Barlow Condensed',sans-serif; font-size:11.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:5px 10px; border-radius:0; white-space:nowrap; }
+  .badge.planning    { background: rgba(113,178,201,0.18); color:#1B5080; border:1px solid rgba(113,178,201,0.45); }  /* steel blue  */
+  .badge.pre-rfp     { background: rgba(218,158,40,0.20);  color:#6B4400; border:1px solid rgba(218,158,40,0.45); }  /* amber       */
+  .badge.rfp         { background: rgba(229,85,79,0.20);   color:#A8332E; border:1px solid rgba(229,85,79,0.40); }  /* coral/red   */
+  .badge.design      { background: rgba(145,214,172,0.28); color:#2A7045; border:1px solid rgba(145,214,172,0.55); } /* mint green  */
+  .badge.construction{ background: rgba(27,54,93,0.14);    color:#1B365D; border:1px solid rgba(27,54,93,0.32); }   /* navy        */
+  .badge.completed   { background: rgba(107,113,120,0.16); color:#3D4147; border:1px solid rgba(107,113,120,0.35); }/* slate grey  */
+
+  .fresh-badge { display:inline-block; font-family:'Barlow Condensed',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; background:var(--coral); color:#FFFFFF; padding:3px 8px; margin-bottom:7px; }
+  .fresh-badge.updated { background:var(--steel); }
+
+  .type-tag { display:inline-block; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; color:var(--navy); border:1px solid var(--navy); border-radius:0; padding:3px 8px; margin-bottom:14px; }
+
+  .row { display:flex; justify-content:space-between; font-size:13.5px; padding:6px 0; border-top:1px solid var(--line); }
+  .row .label { color: var(--text-muted); }
+  .row .val { text-align:right; max-width:60%; }
+
+  .firms { margin-top:10px; }
+  .firms .label { font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:6px; }
+  .firm-pill { display:inline-block; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; background: rgba(113,178,201,0.10); border:1px solid rgba(113,178,201,0.4); border-radius:0; color:var(--navy); padding:4px 9px; margin:0 5px 5px 0; }
+  .firm-pill.lead { background: rgba(229,85,79,0.12); border-color: var(--coral); color: var(--coral-dark); }
+
+  .card-footer { margin-top:14px; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); }
+  .card-footer a { color:var(--coral-dark); text-decoration:none; font-weight:600; }
+  .card-footer a:hover { text-decoration:underline; }
+
+  .contact-line { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .contact-line .contact-name { font-weight:600; color:var(--navy); }
+  .contact-line a { color:var(--coral-dark); text-decoration:none; }
+  .contact-line a:hover { text-decoration:underline; }
+  .row .val a { color:var(--coral-dark); text-decoration:none; }
+  .row .val a:hover { text-decoration:underline; }
+
+  .updates-banner { margin:24px 40px 0; padding:16px 22px; background:#FFFFFF; border:1px solid var(--card-border); border-left:4px solid var(--coral); display:none; }
+  .updates-banner.has-updates { display:block; }
+  .updates-banner-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.07em; text-transform:uppercase; color:var(--navy); margin-bottom:10px; }
+  .updates-banner-title .as-of { font-weight:500; color:var(--text-muted); text-transform:none; letter-spacing:normal; }
+  .updates-list { display:flex; flex-wrap:wrap; gap:8px 10px; }
+  .update-chip { display:inline-flex; align-items:center; gap:6px; font-family:'Montserrat',sans-serif; font-size:13px; color:var(--charcoal); background:var(--off-white); border:1px solid var(--line); padding:6px 12px 6px 10px; text-decoration:none; cursor:pointer; transition: border-color .15s, transform .15s; }
+  .update-chip:hover { border-color: var(--steel); transform: translateY(-1px); }
+  .card.jump-highlight { animation: jumpHighlight 1.8s ease; }
+  @keyframes jumpHighlight { 0%, 100% { box-shadow: none; } 15% { box-shadow: 0 0 0 3px var(--steel); } }
+  .update-chip .tag { font-family:'Barlow Condensed',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:2px 7px; color:#FFFFFF; }
+  .update-chip .tag.new { background:var(--coral); }
+  .update-chip .tag.updated { background:var(--steel); }
+
+  /* DELETE BUTTON */
+  .btn-delete { background:none; border:none; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0; line-height:1; transition:color .15s; }
+  .btn-delete:hover { color:var(--coral); }
+
+  /* CONFIRMATION MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(27,54,93,0.50); display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .modal-overlay.visible { opacity:1; pointer-events:all; }
+  .modal-box { background:#FFFFFF; border-top:4px solid var(--coral); padding:32px 36px; max-width:440px; width:90%; font-family:'Montserrat',sans-serif; }
+  .modal-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:20px; text-transform:uppercase; letter-spacing:0.04em; color:var(--navy); margin-bottom:12px; }
+  .modal-body { font-size:13.5px; color:var(--charcoal); line-height:1.65; margin-bottom:26px; }
+  .modal-body strong { color:var(--navy); }
+  .modal-actions { display:flex; gap:12px; justify-content:flex-end; }
+  .modal-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; padding:10px 22px; border:none; cursor:pointer; }
+  .modal-btn.cancel { background:var(--off-white); color:var(--charcoal); border:1px solid var(--line); }
+  .modal-btn.cancel:hover { background:var(--line); }
+  .modal-btn.confirm { background:var(--coral); color:#FFFFFF; }
+  .modal-btn.confirm:hover { background:var(--coral-dark); }
+
+  .empty { padding:80px 20px; text-align:center; color:var(--text-muted); grid-column:1/-1; }
+  footer { text-align:center; padding:30px; font-size:12.5px; color:var(--text-muted); border-top:1px solid var(--line); background:#FFFFFF; }
+
+  /* ADD PROJECT BUTTON */
+  .btn-add { background:var(--coral); border:none; color:#FFFFFF; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; padding:10px 18px; cursor:pointer; white-space:nowrap; transition:background .15s; }
+  .btn-add:hover { background:var(--coral-dark); }
+
+  /* ADD PROJECT MODAL */
+  .add-modal-overlay { position:fixed; inset:0; background:rgba(27,54,93,0.55); display:flex; align-items:flex-start; justify-content:center; z-index:1001; opacity:0; pointer-events:none; transition:opacity .2s; overflow-y:auto; padding:40px 20px; }
+  .add-modal-overlay.visible { opacity:1; pointer-events:all; }
+  .add-modal-box { background:#FFFFFF; border-top:4px solid var(--coral); padding:32px 36px; max-width:600px; width:100%; font-family:'Montserrat',sans-serif; }
+  .add-modal-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:22px; text-transform:uppercase; letter-spacing:0.04em; color:var(--navy); margin-bottom:24px; }
+  .form-group { margin-bottom:14px; }
+  .form-label { display:block; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--navy); margin-bottom:5px; }
+  .form-label .req { color:var(--coral); }
+  .form-input, .form-select, .form-textarea { width:100%; padding:9px 12px; border:1px solid var(--line); background:#FFFFFF; color:var(--charcoal); font-family:'Montserrat',sans-serif; font-size:13px; border-radius:0; outline:none; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--steel); }
+  .form-textarea { min-height:72px; resize:vertical; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-error { font-size:11.5px; color:var(--coral); margin-top:3px; display:none; }
+  .add-modal-actions { display:flex; gap:12px; justify-content:flex-end; margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="brand-logo-wrap"><img class="brand-logo" src="https://stdlocknut.com/staging/wp-content/uploads/2024/08/logo-sln.png" alt="Standard Locknut"></span><span class="dot"></span>HMS Project Monitor</div>
+  <div class="meta">Last checked: <b id="lastChecked">—</b> &nbsp;|&nbsp; <span id="projectCount">0</span> projects tracked</div>
+</header>
+
+<div class="updates-banner" id="updatesBanner"></div>
+
+<div class="toolbar">
+  <input type="text" id="searchBox" placeholder="Search project, location, or firm...">
+  <select id="typeFilter">
+    <option value="">All structure types</option>
+    <option>Bascule</option>
+    <option>Vertical Lift</option>
+    <option>Swing</option>
+    <option>Retractable/Folding</option>
+    <option>Curling</option>
+    <option>Lock Gate</option>
+    <option>Dam Gate</option>
+  </select>
+  <select id="stageFilter">
+    <option value="">All stages</option>
+    <option>Planning / CIP</option>
+    <option>Pre-RFP</option>
+    <option>RFQ/RFP Issued</option>
+    <option>Design</option>
+    <option>Under Construction</option>
+  </select>
+  <div class="count" id="resultCount" style="margin-left:auto;"></div>
+  <button class="btn-add" onclick="openAddModal()">+ Add Project</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>HMS Project Monitor — updated nightly by an automated source check. Data reflects publicly available planning, procurement, and permitting signals only.</footer>
+
+<script>
+// ---------------------------------------------------------------------------
+// PROJECT DATA
+// This array is the single source of truth for the dashboard. The nightly
+// scheduled task appends new entries / updates existing ones (matched by id)
+// directly in this script block, then overwrites this file. Do not move this
+// block or rename the variable — the scheduled task edits it in place.
+//
+// dateAdded: set once, when the entry is first created. Never changes again.
+// lastUpdated: set to the date of the most recent change — equal to dateAdded
+// for a brand-new entry, or updated to the current date whenever the nightly
+// task modifies an existing entry's fields. The dashboard shows a "New" /
+// "Updated" badge on any card whose lastUpdated is within the past 7 days,
+// computed live from today's date — no manual removal needed, it ages out on
+// its own after a week.
+// ---------------------------------------------------------------------------
+const LAST_CHECKED = "2026-07-17";
+
+const PROJECTS = [
+  {
+    id: "nj-cape-may-bascule-2025",
+    name: "Cape May County Bascule Bridge Replacement",
+    location: "Cape May County, NJ",
+    type: "Bascule",
+    stage: "RFQ/RFP Issued",
+    owner: "Cape May County, NJ (County Engineering)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$52M (estimated)",
+    timeline: "Bid advertisement targeted fall 2025; construction through late 2027",
+    source: "Cape May County 2026 Bridge Replacement & Improvement Plan",
+    sourceUrl: "https://capemaycountynj.gov/DocumentCenter/View/13543/2026-Bridge-Replacement-and-Improvement-Plan",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Scope includes replacement of the bascule span and adjacent flanking span."
+  },
+  {
+    id: "ak-gravina-movable-report",
+    name: "Gravina Access Project — Movable Bridge Study",
+    location: "Ketchikan / Gravina Island, AK",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Alaska DOT&PF",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD",
+    timeline: "Feasibility / alternatives analysis stage",
+    source: "Alaska DOT&PF Gravina Access Project, Appendix S Movable Bridge Report",
+    sourceUrl: "https://dot.alaska.gov/sereg/projects/gravina_access/assets/App_S_Movable_Report.pdf",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Long-running access study that has periodically evaluated a movable bridge crossing option; watch for reactivation signals. As of Feb–Mar 2026, the Ketchikan Gateway Borough is also weighing a tunnel alternative alongside the bridge/ferry options, per KRBD reporting."
+  },
+  {
+    id: "ca-sacramento-i-street-vertical-lift-2026",
+    name: "I Street Bridge Replacement",
+    location: "Sacramento / West Sacramento, CA",
+    type: "Vertical Lift",
+    stage: "RFQ/RFP Issued",
+    owner: "City of Sacramento",
+    leadFirm: "Modjeski and Masters",
+    competingFirms: [],
+    estValue: "$260M–$300M budgeted; bids opened ~April 2026 came in $398M–$500M+ (well over estimate)",
+    timeline: "Bids came in $100M+ over budget in April 2026; city has pushed construction start back to at least 2027 without approving any contract while seeking a funding fix",
+    source: "Hoodline / CapRadio / Modjeski and Masters",
+    sourceUrl: "https://www.capradio.org/articles/2026/04/20/i-street-bridge-replacement-faces-delay-as-bids-come-in-100-million-over-budget/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-26",
+    notes: "Replaces the 1911 through-truss swing bridge with an 860-ft structure carrying a 330-ft vertical lift span. Procurement stalled in April 2026 after bids came in well over the engineer's estimate; West Sacramento's mayor is lobbying Congress for federal funding, including a possible lifeline from the proposed BUILD America 250 Act, to close the gap before a re-bid."
+  },
+  {
+    id: "bm-st-georges-swing-to-lift-2026",
+    name: "St. George's Swing Bridge Replacement",
+    location: "St. George's / St. David's, Bermuda",
+    type: "Vertical Lift",
+    stage: "RFQ/RFP Issued",
+    owner: "Government of Bermuda",
+    leadFirm: "Ramboll UK / Eadon Consulting / Knight Architects (design team)",
+    competingFirms: [],
+    estValue: "$50M–$70M total; $9.4M allocated FY2026-27",
+    timeline: "RFP for 'The Engineer' role open, submissions due July 15, 2026 3:00 PM Bermuda time per the official gov.bm procurement listing (confirmed directly from the source page; a July 8 date had circulated in secondary press but is incorrect); anticipated ranking of proponents Aug 19, 2026; contract execution targeted Oct 28, 2026; ~3-year build once contracted",
+    source: "Government of Bermuda Procurement / The Royal Gazette / Premier Construction News",
+    sourceUrl: "https://www.gov.bm/procurement/rfp-44-28-75-04-n-swing-bridge-replacement",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-07-03",
+    notes: "Replaces the 1964 swing bridge with a hydraulically actuated 30.1m lift span as part of a seven-span viaduct (152.8m overall, 22m navigation channel); design team (Ramboll UK, Eadon Consulting, Knight Architects) already engaged. As of April 2026 the project moved into tender phase under RFP 44-28-75-04-N seeking 'The Engineer' to administer the build contract; submission deadline confirmed as July 15, 2026 directly from the official gov.bm listing."
+  },
+  {
+    id: "ma-boston-north-station-draw-one-2026",
+    name: "North Station Draw One Bridge Replacement",
+    location: "Boston / Cambridge / Somerville, MA",
+    type: "Vertical Lift",
+    stage: "Under Construction",
+    owner: "MBTA",
+    leadFirm: "Skanska Civil Northeast / Koch JV (design-build); VHB (design partner)",
+    competingFirms: [],
+    estValue: "$1.06B design-build contract; $1.286B total project",
+    timeline: "Construction begins May 2026; completion targeted fall 2032",
+    source: "Engineering News-Record / MBTA",
+    sourceUrl: "https://www.enr.com/articles/62956-skanska-jv-wins-106b-mbta-contract-for-boston-rail-bridge-replacement",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replaces the 1930s-era Draw One bascule bridges over the Charles River with three side-by-side, two-track vertical lift spans (six tracks total)."
+  },
+  {
+    id: "nj-raritan-river-vertical-lift-phase2",
+    name: "Raritan River Bridge Replacement (Phase 2 — Lift Span)",
+    location: "Perth Amboy / South Amboy, NJ",
+    type: "Vertical Lift",
+    stage: "Under Construction",
+    owner: "NJ Transit",
+    leadFirm: "Hardesty & Hanover (design); Skanska Koch (Phase 2 contractor)",
+    competingFirms: ["Gannett Fleming", "AECOM", "Mott MacDonald"],
+    estValue: "$444M Phase 2 contract; $595M total project",
+    timeline: "Phase 2 lift-span construction underway; completion targeted Q3 2029",
+    source: "Engineering News-Record / Hardesty & Hanover",
+    sourceUrl: "https://www.enr.com/articles/60020-nj-transit-picks-skanska-for-444m-lift-bridge-contract",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replaces a 117-year-old swing-span rail bridge on the North Jersey Coast Line with a new twin-track vertical lift bridge providing a 300-ft channel."
+  },
+  {
+    id: "fl-longboat-pass-bascule-study-2026",
+    name: "Longboat Pass Bridge Replacement (PD&E Study)",
+    location: "Longboat Key / Coquina Beach, FL",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Florida DOT (District 1)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$138M (fixed-span, FDOT-preferred) vs. $176M–$194M (bascule alternatives)",
+    timeline: "PD&E study concluding mid-2026; FDOT final decision expected by end of summer 2026",
+    source: "Your Observer / Longboat Key News",
+    sourceUrl: "https://www.yourobserver.com/news/2026/feb/25/fdot-fixed-span-longboat-pass-bridge/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "FDOT is leaning toward a 78-ft fixed-span replacement over the low- or mid-level bascule alternatives; the town favors a 36-ft mid-level bascule. Flagged here because a movable-span outcome remains on the table pending FDOT's final call."
+  },
+  {
+    id: "nj-corsons-inlet-bascule-study-2025",
+    name: "Corsons Inlet Bridge Replacement Study",
+    location: "Strathmere / Ocean City, NJ",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Cape May County Bridge Commission",
+    leadFirm: "Hardesty & Hanover",
+    competingFirms: [],
+    estValue: "$190M–$230M (per April 2026 Local Concept Development estimate)",
+    timeline: "Federally funded Bridge Planning Grant study begun March 2025; Local Concept Development findings presented to County Commissioners April 28, 2026; Preliminary Preferred Alternative due December 2026; 7-10 year replacement timeline",
+    source: "Press of Atlantic City / Cape May County / OCNJ Daily",
+    sourceUrl: "https://ocnjdaily.com/news/2026/may/05/replacement-of-two-old-bridges-estimated-at-about-200-million-each/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-26",
+    notes: "1948 single-leaf bascule span, inoperable since December 2013; alternatives under review include both fixed and movable replacement spans. Hardesty & Hanover confirmed as the study's engineering firm; April 2026 estimate raised the cost range significantly above the original $50M-$200M figure."
+  },
+  {
+    id: "nj-townsends-inlet-bascule-study-2025",
+    name: "Townsends Inlet Bridge Replacement Study",
+    location: "Avalon / Sea Isle City, NJ",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Cape May County Bridge Commission",
+    leadFirm: "Hardesty & Hanover",
+    competingFirms: [],
+    estValue: "$190M–$230M (per April 2026 Local Concept Development estimate)",
+    timeline: "Federally funded Bridge Planning Grant study begun March 2025; Local Concept Development findings presented to County Commissioners April 28, 2026; Preliminary Preferred Alternative due December 2026; 7-10 year replacement timeline",
+    source: "SeaIsleNews.com / OCNJ Daily",
+    sourceUrl: "https://ocnjdaily.com/news/2026/may/05/replacement-of-two-old-bridges-estimated-at-about-200-million-each/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-26",
+    notes: "1939 single-leaf bascule span rated in 'poor' condition; replacement study running in parallel with the Corsons Inlet Bridge study under the same Ocean Drive program. Hardesty & Hanover confirmed as the study's engineering firm; April 2026 estimate raised the cost range significantly above the original $65.7M-$167.7M figure."
+  },
+  {
+    id: "ny-livingston-ave-rail-lift-2026",
+    name: "Livingston Avenue Rail Bridge Replacement",
+    location: "Albany / Rensselaer, NY",
+    type: "Vertical Lift",
+    stage: "Design",
+    owner: "CSX / Amtrak (NY State funded)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$215.1M FRA CRISI grant (largest in program history) + $634.8M NY State funding",
+    timeline: "Design underway; completion targeted 2028",
+    source: "FRA CRISI Program / Governor Hochul announcement",
+    sourceUrl: "https://railroads.dot.gov/grants-loans/consolidated-rail-infrastructure-and-safety-improvements-crisi-program",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replaces a ~125-year-old swing-span rail bridge over the Hudson River with a new lift navigation span; carries CSX freight and Amtrak passenger service. Largest single CRISI award issued to date."
+  },
+  {
+    id: "id-albeni-falls-spillway-gates-2026",
+    name: "Albeni Falls Dam Spillway Gate Replacement",
+    location: "Oldtown, ID",
+    type: "Dam Gate",
+    stage: "Under Construction",
+    owner: "USACE Seattle District",
+    leadFirm: "Knight Construction & Supply, Inc.",
+    competingFirms: [],
+    estValue: "$20,395,700 contract",
+    timeline: "Contract awarded February 26, 2026 to Knight Construction & Supply, Inc.; phased gate installation begins 2027, full completion expected early 2030s",
+    source: "USACE Seattle District / Army.mil contract award announcement",
+    sourceUrl: "https://www.army.mil/article/291182/u_s_army_corps_of_engineers_awards_spillway_gate_replacement_contract_announces_refill_date_at_albeni_falls_dam",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replacement of all 11 spillway gates at Albeni Falls Dam, driven by 2024 discovery of defective steel in the existing gates; a flood-control and hydropower dam-gate project rather than a navigable-channel bridge."
+  },
+  {
+    id: "mn-wi-ia-msr-locks-2-10-miter-gates-2026",
+    name: "Mississippi River Locks and Dams 2–10 Miter Gate Replacements",
+    location: "Lock and Dam 5A (Fountain City, WI), Lock and Dam 8 (Genoa, WI), Lock and Dam 9 (Lynxville, WI), Lock and Dam 10 (Guttenberg, IA)",
+    type: "Lock Gate",
+    stage: "Under Construction",
+    owner: "USACE St. Paul District",
+    leadFirm: "G&G Steel, Inc.",
+    competingFirms: [],
+    estValue: "$18M contract (Lock & Dam 3 and Lock & Dam 4 miter gates); gates for Locks 6, 7 & 9 already fabricated and installed",
+    timeline: "New G&G Steel miter gates installed at Lock & Dam 9 (Lynxville, WI) via scheduled closures July 14, 16, 21, and 23, 2026; Lock & Dam 3 (Welch, MN) gate installation targeted summer 2028; Lock & Dam 4 (Alma, WI) summer 2029",
+    source: "USACE St. Paul District / Waterways Journal",
+    sourceUrl: "https://www.mvp.usace.army.mil/Media/News-Releases/Article/3926397/corps-of-engineers-awards-miter-gate-contract-for-two-locks-and-dams/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-07-09",
+    notes: "Navigation lock miter gate anchorage replacement program spanning multiple Upper Mississippi River lock-and-dam sites (2, 3, 4, 5A, 6, 7, 8, 10); fabrication contract for Locks 3 & 4 awarded to G&G Steel Inc., following completed work at Locks 6 & 7. New G&G Steel-fabricated miter gates for Lock and Dam 9 (Lynxville, WI) were installed during scheduled river-traffic closures on July 14, 16, 21, and 23, 2026."
+  },
+  {
+    id: "ca-stony-gorge-spillway-gate-2026",
+    name: "Stony Gorge Reservoir Spillway Gate Replacement",
+    location: "Glenn County, CA",
+    type: "Dam Gate",
+    stage: "Pre-RFP",
+    owner: "Bureau of Reclamation",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$3M allocated",
+    timeline: "Repair/restoration funding allocated; contracting in progress",
+    source: "Bureau of Reclamation dam asset management program",
+    sourceUrl: "https://www.usbr.gov/assetmanagement/dams.html",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Spillway gate repair and restoration outside USACE's civil works program, covered instead by Reclamation's dam safety / asset management program."
+  },
+  {
+    id: "nj-burlington-county-tacony-palmyra-powerhouse-2026",
+    name: "Tacony-Palmyra Bridge Powerhouse & Machinery Replacement",
+    location: "Palmyra, NJ / Philadelphia, PA",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Burlington County Bridge Commission",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD",
+    timeline: "Capital plan item; electrical powerhouse and movable-span machinery replacement",
+    source: "Burlington County Bridge Commission capital plan",
+    sourceUrl: "https://www.bcbridges.org/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "One of two movable spans owned directly by the Commission (alongside the Burlington-Bristol Bridge); capital plan covers replacement of the electrical powerhouse and machinery that operate the bascule leaves."
+  },
+  {
+    id: "nj-burlington-bristol-bridge-machinery-2026",
+    name: "Burlington-Bristol Bridge Machinery & Electrical Upgrades",
+    location: "Burlington, NJ / Bristol, PA",
+    type: "Vertical Lift",
+    stage: "Planning / CIP",
+    owner: "Burlington County Bridge Commission",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "Part of $9.25M shared capital allocation (with Tacony-Palmyra and Riverside-Delanco bridges)",
+    timeline: "Capital plan item; opening machinery and electrical system replacement for the 135-ft lift span",
+    source: "Burlington County Bridge Commission capital plan",
+    sourceUrl: "https://www.nbpc2024.org/wp-content/uploads/2024/09/C13-NBPC24-BCBC-Presentation-v2-1.pdf",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Companion project to the already-tracked Tacony-Palmyra powerhouse/machinery work; this span is vertical lift (135-ft lift) rather than bascule."
+  },
+  {
+    id: "ma-new-bedford-fairhaven-vertical-lift-2026",
+    name: "New Bedford–Fairhaven (Fish Island) Bridge Replacement",
+    location: "New Bedford / Fairhaven, MA",
+    type: "Vertical Lift",
+    stage: "Planning / CIP",
+    owner: "MassDOT",
+    leadFirm: "Modjeski and Masters",
+    competingFirms: [],
+    estValue: "$200M+ (estimated)",
+    timeline: "Design consultant selected; preferred alternative is a new vertical lift bridge; construction estimated to begin ~2028",
+    source: "Mass.gov / Bridgeweb",
+    sourceUrl: "https://www.mass.gov/info-details/about-the-new-bedford-fairhaven-swing-bridge-reconstruction",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-07-03",
+    notes: "Replaces the 1903 swing bridge (aka Fish Island Bridge) over the Acushnet River with a new vertical lift bridge with steel towers, widening and speeding up the navigable channel. The existing bridge suffered repeated 2026 mechanical failures/stuck-open incidents (including March 9, April 10-13, and May 1-4), prompting emergency weekend closures and underscoring the urgency of the replacement program."
+  },
+  {
+    id: "ct-norwalk-walk-bridge-vertical-lift-2026",
+    name: "WALK Bridge Replacement",
+    location: "Norwalk, CT",
+    type: "Vertical Lift",
+    stage: "Under Construction",
+    owner: "CTDOT",
+    leadFirm: "The Middlesex Corporation (contractor); WSP (engineering)",
+    competingFirms: [],
+    estValue: "Multi-billion-dollar program; full program cost not yet finalized",
+    timeline: "High-tower removal underway in 2026; first span float-in targeted 2027; full completion ~2030",
+    source: "WALK Bridge Program / The Middlesex Corporation",
+    sourceUrl: "https://www.walkbridgect.com/overview/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replaces the 4-track Norwalk River swing bridge (serving Metro-North/Amtrak) with two new dual-track vertical lift spans plus fixed approach spans."
+  },
+  {
+    id: "oh-cleveland-carter-road-lift-2026",
+    name: "Carter Road Lift Bridge Rehabilitation",
+    location: "Cleveland, OH",
+    type: "Vertical Lift",
+    stage: "Design",
+    owner: "City of Cleveland",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$20M (state grant, Phase 1 mechanical/electrical rehab)",
+    timeline: "Preliminary engineering RFP issued; PS&E for Phase 1 scheduled 2026; construction Phase 1 planned 2027",
+    source: "City of Cleveland procurement portal",
+    sourceUrl: "https://procurement.opengov.com/portal/clevelandoh/projects/105439/document?section=958968",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Span-drive vertical lift bridge built 1940 over the Cuyahoga River; rehab of mechanical/electrical opening systems and machinery, not a full replacement. Future Parts 2 & 3 (detailed design/construction) to follow, potentially federally funded."
+  },
+  {
+    id: "mi-soo-locks-poe-gate3-2026",
+    name: "Poe Lock Gate 3 Replacement",
+    location: "Sault Ste. Marie, MI",
+    type: "Lock Gate",
+    stage: "Pre-RFP",
+    owner: "USACE Detroit District",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD",
+    timeline: "Sources Sought issued (deadline Nov 2025); solicitation anticipated; period of performance spring 2026–summer 2029",
+    source: "Federal procurement notice (RFPMart aggregator)",
+    sourceUrl: "https://www.rfpmart.com/1036681-us-fed-poe-lock-gate-3-replacement.html",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replacement miter gate leaf (~225 tons each, 60 ft high x 5.5 ft wide x 63 ft long) for Gate 3 at the Poe Lock, part of the Soo Locks complex on the St. Marys River."
+  },
+  {
+    id: "ct-westport-saugatuck-swing-2026",
+    name: "Saugatuck River Swing Bridge (Cribari Bridge) Rehabilitation/Replacement",
+    location: "Westport, CT",
+    type: "Swing",
+    stage: "Planning / CIP",
+    owner: "CTDOT",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD",
+    timeline: "Draft EA published; 60-day public comment period closed April 17, 2026; CTDOT's stated preference is replacement over rehabilitation",
+    source: "CTDOT / Federal Permitting Dashboard",
+    sourceUrl: "https://www.permits.performance.gov/permitting-project/dot-projects/rehabilitation-or-replacement-saugatuck-river-swing-bridge",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Historic swing bridge (aka Cribari Bridge) over the Saugatuck River; NEPA environmental review stage, no firm or construction value confirmed yet."
+  },
+  {
+    id: "fl-sarasota-blackburn-point-swing-2026",
+    name: "Blackburn Point Swing Bridge — Future Alternatives Study",
+    location: "Sarasota County, FL (Osprey)",
+    type: "Swing",
+    stage: "Planning / CIP",
+    owner: "Sarasota County",
+    leadFirm: "Hardesty & Hanover LLC",
+    competingFirms: [],
+    estValue: "~$31M (repair alternative, cited range); other alternatives TBD",
+    timeline: "Public alternatives workshop held June 16, 2026; H&H PD&E study (~$2M) expected complete Q2 2027; Sarasota County Commission and Historical Preservation Board review to follow before an official recommendation",
+    source: "Bay News 9 / Your Sun / Sarasota County",
+    sourceUrl: "https://baynews9.com/fl/tampa/news/2026/06/16/blackburn-point-bridge-future-still-unknown--both-sides-heard-at-public-workshop",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-07-01",
+    notes: "1926 swing bridge, listed on the National Register of Historic Places; county weighing repair vs. replacement options including a new movable span. Hardesty & Hanover LLC confirmed as the PD&E study consultant ($2M contract), with study completion targeted Q2 2027 before a formal recommendation goes to the County Commission and Historical Preservation Board."
+  },
+  {
+    id: "il-chicago-lake-street-bascule-2026",
+    name: "Lake Street Bascule Bridge Rehabilitation",
+    location: "Chicago, IL",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "City of Chicago (CDOT)",
+    leadFirm: "Granite Construction",
+    competingFirms: [],
+    estValue: "$138M",
+    timeline: "Construction started October 2025; CTA track outages planned fall 2026/spring 2027; completion targeted Dec 2027–Jan 2028",
+    source: "Construction Dive / Granite Construction",
+    sourceUrl: "https://www.constructiondive.com/news/granite-rehab-lake-street-bascule-chicago-bridge/804000/",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Double-deck trunnion bascule bridge over the Chicago River carrying CTA rail and roadway; rehab includes mechanical/electrical opening-machinery upgrades and historic bridgehouse restoration."
+  },
+  {
+    id: "ut-hyrum-dam-spillway-gates-2026",
+    name: "Hyrum Dam Spillway Replacement",
+    location: "Cache County, UT",
+    type: "Dam Gate",
+    stage: "Under Construction",
+    owner: "Bureau of Reclamation",
+    leadFirm: "Ames Federal Contracting Group",
+    competingFirms: [],
+    estValue: "$115.9M contract",
+    timeline: "Contract awarded March 2025; 3–4 year construction timeline, reported ahead of schedule",
+    source: "Bureau of Reclamation news release",
+    sourceUrl: "https://www.usbr.gov/newsroom/news-release/5122",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replacement of radial spillway gates and gate hoist structure/equipment at Hyrum Dam; managed by Reclamation's Provo Area Office."
+  },
+  {
+    id: "co-blue-mesa-dam-valves-2026",
+    name: "Blue Mesa Dam Penstock Valve & Gate Replacement",
+    location: "Gunnison River / Aspinall Unit, CO",
+    type: "Dam Gate",
+    stage: "Under Construction",
+    owner: "Bureau of Reclamation",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$32M",
+    timeline: "Work began January 2026; first refurbished gate scheduled to return for installation August 2026",
+    source: "Bureau of Reclamation news release / Water Power Magazine",
+    sourceUrl: "https://www.usbr.gov/newsroom/news-release/5280",
+    dateAdded: "2026-06-23",
+    lastUpdated: "2026-06-23",
+    notes: "Replacement of two ring follower gates and two butterfly valves (penstock isolation gates) at Blue Mesa Dam — first replacement since 1966."
+  },
+  {
+    id: "mi-bay-city-lafayette-bascule-2026",
+    name: "Lafayette Street (M-13/M-84) Bascule Bridge Replacement",
+    location: "Bay City, MI",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "Michigan DOT",
+    leadFirm: "GKJV-II (Granite Construction / Kraemer North America JV)",
+    competingFirms: [],
+    estValue: "$113M contract",
+    timeline: "Work began December 2024; new bridge open to traffic summer 2027",
+    source: "Bridge Design & Engineering / Granite Construction press release",
+    sourceUrl: "https://www.graniteconstruction.com/newsroom/granite-joint-venture-remove-and-replace-lafayette-bascule-bridge-bay-city-michigan",
+    dateAdded: "2026-06-25",
+    lastUpdated: "2026-06-25",
+    notes: "Full demolition and replacement of the existing Lafayette Street bascule bridge over the Saginaw River, including new substructure, bascule piers, structural steel, machinery, and bridge house."
+  },
+  {
+    id: "tn-chattanooga-chickamauga-lock-2026",
+    name: "Chickamauga Lock Replacement",
+    location: "Chattanooga, TN (Tennessee River, mile 471)",
+    type: "Lock Gate",
+    stage: "Under Construction",
+    owner: "USACE Nashville District",
+    leadFirm: "C.J. Mahan Construction Company LLC",
+    competingFirms: [],
+    estValue: "$192M final contract ($954.4M total project)",
+    timeline: "14 miter gates delivered December 2024; final contract awarded February 2026; operational target November 2027",
+    source: "USACE Nashville District / contract award announcement",
+    sourceUrl: "https://www.lrn.usace.army.mil/Missions/Civil-Works/Chickamauga-Lock/",
+    dateAdded: "2026-06-25",
+    lastUpdated: "2026-06-25",
+    notes: "New 110-ft x 600-ft lock chamber to replace the failing original lock; part of a long-running USACE replacement effort. 14 miter gates already fabricated and delivered; final contract covers remaining mechanical, electrical, and civil work to bring the new lock into operation."
+  },
+  {
+    id: "ct-old-saybrook-old-lyme-bascule-2026",
+    name: "Connecticut River Bridge Replacement",
+    location: "Old Saybrook / Old Lyme, CT",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "Amtrak",
+    leadFirm: "O&G Industries / Tutor Perini (design-build JV)",
+    competingFirms: [],
+    estValue: "$1.3B design-build contract",
+    timeline: "Construction began August 2024; completion targeted 2031",
+    source: "Construction Dive / O&G Industries / FRA",
+    sourceUrl: "https://www.constructiondive.com/news/og-tutor-perini-connecticut-river-bridge-replacement/720329/",
+    dateAdded: "2026-06-26",
+    lastUpdated: "2026-06-26",
+    notes: "Replaces the 1907 two-track movable bridge over the Connecticut River on Amtrak's Northeast Corridor with a new trunnion bascule span located 52 ft south of the existing structure, increasing vertical clearance from 18 ft to 24 ft and raising speeds to 70 mph."
+  },
+  {
+    id: "il-rock-island-lock-dam-21-tainter-gates-2026",
+    name: "Lock and Dam 21 Bolted Tainter Gate Supply",
+    location: "Quincy, IL (Mississippi River, Lock and Dam 21)",
+    type: "Dam Gate",
+    stage: "Pre-RFP",
+    owner: "USACE Rock Island District",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD (prior related Lock & Dam 21 gate fabrication contract awarded at $17.3M)",
+    timeline: "Sources Sought (W912EK26LD21) issued February 19, 2026, responses due March 23, 2026",
+    source: "USACE Rock Island District / SAM.gov",
+    sourceUrl: "https://www.highergov.com/contract-opportunity/lock-and-dam-21-bolted-tainter-gate-supply-w912ek26ld21-r-60542/",
+    dateAdded: "2026-06-26",
+    lastUpdated: "2026-06-26",
+    notes: "Fabrication and delivery of four bolted-erection Tainter gates (~20 ft x 64 ft each) for Lock and Dam 21, in service since 1938. Follows a related $17.3M tainter gate fabrication contract awarded to Sealevel Construction in October 2025."
+  },
+  {
+    id: "nd-garrison-dam-spillway-mods-2026",
+    name: "Garrison Dam Spillway Modifications",
+    location: "Riverdale, ND",
+    type: "Dam Gate",
+    stage: "Planning / CIP",
+    owner: "USACE Omaha District",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$1.8B total program (largest dam safety modification in USACE history)",
+    timeline: "Spillway approach dredging contract ($22M, HSG Park Joint Venture 2) underway through August 2027; main spillway/tainter gate construction expected to begin ~2029-2030",
+    source: "USACE Omaha District / Renewable Energy World / InForum",
+    sourceUrl: "https://www.inforum.com/news/north-dakota/1-8b-garrison-dam-spillway-project-to-be-largest-in-us-army-corps-history",
+    dateAdded: "2026-06-26",
+    lastUpdated: "2026-06-26",
+    notes: "Driven by a 2020 Probable Maximum Flood update that cut freeboard from 13.8 ft to 1.4 ft; scope includes modifications to the spillway's Tainter gates, abutments, chute slab, and stilling basin. Gate-related construction contract not yet awarded — currently in dredging/site-prep phase."
+  },
+  {
+    id: "mi-soo-new-lock-2026",
+    name: "New Lock at the Soo",
+    location: "Sault Ste. Marie, MI",
+    type: "Lock Gate",
+    stage: "Under Construction",
+    owner: "USACE Detroit District",
+    leadFirm: "Kokosing Alberici Traylor LLC (KAT)",
+    competingFirms: [],
+    estValue: "$2.62B–$3.22B total program (cost revised down from $3.22B per 2025 ENR report)",
+    timeline: "Phase 3 options (incl. hands-free mooring, downstream ship arrestors) awarded through June 2025; excavation, concrete monolith placement, and mechanical work ongoing through 2026; on schedule for 2030 completion",
+    source: "Engineering News-Record / Construction Dive / USACE Great Lakes and Ohio River Division",
+    sourceUrl: "https://www.constructiondive.com/news/michigan-soo-lock-kokosing-alberici-traylor/727147/",
+    dateAdded: "2026-06-29",
+    lastUpdated: "2026-06-29",
+    notes: "New 1,200-ft lock chamber alongside the existing Poe Lock, sized to handle the largest Great Lakes vessels; separate from the already-tracked Poe Lock Gate 3 replacement. KAT joint venture (Kokosing, Alberici, Traylor Bros.) holds the main construction contract, awarded in phases since 2022."
+  },
+  {
+    id: "wa-seattle-salmon-bay-bascule-2026",
+    name: "Salmon Bay Rail Bridge Counterweight & Trunnion Rehabilitation",
+    location: "Seattle (Ballard / Interbay), WA",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "BNSF Railway",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$95M total ($25M federal INFRA grant + $70M BNSF funded)",
+    timeline: "Preparatory site work began summer 2025; multi-year heavy maintenance underway in phases; completion targeted 2028",
+    source: "BNSF / Railway Age / Seattle DJC",
+    sourceUrl: "https://salmonbayrailbridge.com/project-updates/",
+    dateAdded: "2026-06-29",
+    lastUpdated: "2026-06-29",
+    notes: "Strauss heel-trunnion single-leaf bascule bridge; BNSF originally planned a vertical-lift replacement but, after community input, opted instead to replace the trunnion bearings and most of the counterweight (steel and concrete) on the existing structure rather than a full replacement."
+  },
+  {
+    id: "ny-erie-canal-lift-bridges-2026",
+    name: "Brockport & Albion Vertical-Lift Bridge Rehabilitation",
+    location: "Brockport (NY Route 19) & Albion (NY Route 98), NY",
+    type: "Vertical Lift",
+    stage: "Design",
+    owner: "NYSDOT",
+    leadFirm: "Modjeski and Masters",
+    competingFirms: [],
+    estValue: "~$6M construction (consultant inspection/design contract awarded; construction estimate)",
+    timeline: "Modjeski and Masters awarded full structural/mechanical/electrical inspection and design; construction phasing TBD",
+    source: "Roads & Bridges / Bridge Design & Engineering / Modjeski and Masters",
+    sourceUrl: "https://www.roadsbridges.com/bridges/bridge-construction/news/10651593/nysdot-awards-rehab-contract-for-two-vertical-lift-bridges-over-erie-canal",
+    dateAdded: "2026-06-29",
+    lastUpdated: "2026-06-29",
+    notes: "Two 'towerless' vertical-lift bridges over the Erie Canal, built 1911–1915, carrying roughly 5.8 million passenger trips/year combined; rehabilitation of structural, mechanical, and electrical components rather than full replacement."
+  },
+  {
+    id: "tn-kentucky-lock-miter-gate-gearbox-2026",
+    name: "Kentucky Lock Miter Gate Gearbox Fabrication",
+    location: "Gilbertsville, KY (Tennessee River, Kentucky Lock)",
+    type: "Lock Gate",
+    stage: "RFQ/RFP Issued",
+    owner: "USACE Nashville District",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD",
+    timeline: "RFI market research responses due March 23, 2026; anticipated delivery 365 days from contract award; Kentucky Lock closed June 15–29, 2026 for related downstream miter gate gearbox replacement work",
+    source: "USACE Nashville District / GovTribe",
+    sourceUrl: "https://govtribe.com/opportunity/federal-contract-opportunity/kentucky-lock-miter-gate-gearbox-fabrication-w912p526rkylf",
+    dateAdded: "2026-06-29",
+    lastUpdated: "2026-06-29",
+    notes: "Fabrication and delivery of two new upstream miter gate low-speed gearboxes (with output pinions) for Kentucky Lock; separate from the already-tracked Chickamauga Lock Replacement in the same USACE Nashville District. A related downstream miter gate gearbox replacement closed the lock June 15-29, 2026."
+  },
+  {
+    id: "mn-duluth-aerial-lift-bridge-rehab-2026",
+    name: "Aerial Lift Bridge Rehabilitation",
+    location: "Duluth, MN",
+    type: "Vertical Lift",
+    stage: "Design",
+    owner: "City of Duluth, MN",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$23.3M (50% USDOT grant + Minnesota state grants)",
+    timeline: "Final federal funding secured June 2026; construction begins Oct–Dec 2026, phased over four winters to minimize shipping-season impact",
+    source: "City of Duluth / WDIO / KARE 11",
+    sourceUrl: "https://duluthmn.gov/web-subscriptions/View-press-release/?prid=8326",
+    dateAdded: "2026-06-30",
+    lastUpdated: "2026-06-30",
+    notes: "Rehabilitation (not replacement) of the iconic 1905 Aerial Lift Bridge, converted to vertical lift in 1930; scope covers lift-span truss repainting, deck grating replacement, structural steel repairs, concrete repairs, and sidewalk/support steel replacement. Currently managed in-house by City of Duluth engineering staff; no outside design or construction firm publicly confirmed yet."
+  },
+  {
+    id: "pa-montgomery-lock-new-chamber-2026",
+    name: "Montgomery Lock New Lock Chamber",
+    location: "Monaca, PA (Upper Ohio River)",
+    type: "Lock Gate",
+    stage: "Under Construction",
+    owner: "USACE Pittsburgh District",
+    leadFirm: "Trumbull-Brayman Construction Corporation JV (chamber); separate $35M miter gate fabrication contract",
+    competingFirms: [],
+    estValue: "$770M primary construction contract; $1.59B total project cost",
+    timeline: "Main contract awarded December 10, 2024; auxiliary chamber demolition began spring 2025; miter gate fabrication option ($35M) awarded; project ~10–12% complete late 2025; estimated completion 2033",
+    source: "Engineering News-Record / DVIDS / Construction Dive",
+    sourceUrl: "https://www.constructiondive.com/news/pennsylvania-usace-montgomery-locks-construction/735571/",
+    dateAdded: "2026-07-01",
+    lastUpdated: "2026-07-01",
+    notes: "Replaces 56 ft × 360 ft auxiliary lock chamber with a new 110 ft × 600 ft primary lock chamber at Montgomery Locks and Dam on the Ohio River. Part of the Upper Ohio Navigation Project, which will also modernize Emsworth and Dashields locks and dams (all built pre-1936). Trumbull-Brayman JV (Trumbull Corp. + Brayman Construction Corp., both Pittsburgh-based) holds the $770M chamber contract; USACE also awarded a separate $35M contract option for hydraulic steel structure fabrication including miter gates (58 ft wide; 130 and 175 tons each). More than $1B funded through the Infrastructure Investment and Jobs Act."
+  },
+  {
+    id: "ct-new-haven-tomlinson-lift-2026",
+    name: "Tomlinson Bridge Rehabilitation",
+    location: "New Haven, CT",
+    type: "Vertical Lift",
+    stage: "Under Construction",
+    owner: "CTDOT",
+    leadFirm: "Mohawk Northeast, Inc. (contractor); Hardesty & Hanover (design)",
+    competingFirms: [],
+    estValue: "~$25.8M estimated (80% federal / 20% state funded)",
+    timeline: "Construction started April 2026; completion targeted November 2028",
+    source: "CTDOT Construction Advisory / CTDOT Project No. 0092-0687",
+    sourceUrl: "https://portal.ct.gov/dot/ctdot-construction-advisories/2026/rehabilitation-of-the-tomlinson-bridge-over-the-quinnipiac-river-in-new-haven",
+    dateAdded: "2026-07-02",
+    lastUpdated: "2026-07-02",
+    notes: "Rehabilitation (not replacement) of the 2002 vertical lift span on U.S. Route 1 over the Quinnipiac River in New Haven; scope covers mechanical and electrical system upgrades, elevator system repairs, gate and camera upgrades, tower and superstructure repainting, and bituminous overlay on approach spans. Designed by Hardesty & Hanover; the lift span raises 62 ft on 150-ft towers using 3-million-lb counterweights."
+  },
+  {
+    id: "or-portland-burnside-bascule-2026",
+    name: "Earthquake Ready Burnside Bridge Replacement",
+    location: "Portland, OR (Willamette River)",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Multnomah County, OR",
+    leadFirm: "HDR (prime design consultant); Hardesty & Hanover (subconsultant)",
+    competingFirms: [],
+    estValue: "$1.6B–$1.8B (revised; original estimate ~$895M)",
+    timeline: "Final design ongoing; 60% design milestone targeted summer 2027; construction start delayed indefinitely due to federal funding uncertainty; opening originally targeted spring 2031",
+    source: "Construction Dive / KGW / Oregon Public Broadcasting",
+    sourceUrl: "https://www.constructiondive.com/news/burnside-bridge-portland-earthquake-ready/697552/",
+    dateAdded: "2026-07-02",
+    lastUpdated: "2026-07-02",
+    notes: "Replaces the 1926 double-leaf rolling bascule bridge over the Willamette River with a new 2,200-ft earthquake-resilient structure featuring a movable bascule span, steel girder west approach, and inverted Y-shaped cable-stayed east approach. Received federal NEPA approval; construction start was moved to 2028 then delayed indefinitely in 2026 as costs escalated from ~$895M to $1.6–1.8B amid federal funding uncertainty. Burnside Bridge Partners JV was selected as design-build contractor but no construction contract has been executed; county continuing design toward 60% milestone."
+  },
+  {
+    id: "la-wslp-frenier-floodgates-2026",
+    name: "West Shore Lake Pontchartrain — Frenier Floodgates (WSLP-103A)",
+    location: "St. John the Baptist Parish, LA",
+    type: "Swing",
+    stage: "Pre-RFP",
+    owner: "USACE New Orleans District",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$10M–$25M (estimated; small business set-aside)",
+    timeline: "Sources Sought issued February 2026, responses due March 11, 2026; formal solicitation and contract award anticipated FY2026",
+    source: "USACE New Orleans District / SAM.gov Sources Sought Notice",
+    sourceUrl: "https://sam.gov/workspace/contract/opp/3dd4f73c6f8e424b91d85138db388d4b/view",
+    dateAdded: "2026-07-02",
+    lastUpdated: "2026-07-02",
+    notes: "One of the final contracts in the $760M West Shore Lake Pontchartrain Hurricane and Storm Damage Risk Reduction project. Scope includes construction of reinforced concrete T-type floodwalls, a structural steel swing gate, and adjacent levee in St. John the Baptist Parish. Classified as a small business set-aside; USACE FY26 acquisition forecast listed it as a Q1 FY26 standalone contract."
+  },
+  {
+    id: "la-wslp-i55-navigation-gate-2026",
+    name: "West Shore Lake Pontchartrain — I-55 Navigation Gate, Pump Stations & T-Wall Contract",
+    location: "St. John the Baptist Parish, LA (I-55)",
+    type: "Swing",
+    stage: "Under Construction",
+    owner: "USACE New Orleans District",
+    leadFirm: "Pittman-Sealevel LLC (M.R. Pittman Group / Sealevel Construction JV)",
+    competingFirms: [],
+    estValue: "$419.7M contract (part of $760M+ overall WSLP program)",
+    timeline: "Contract awarded April 2, 2026; described by USACE as the final major construction contract in St. John the Baptist Parish for this program",
+    source: "USACE New Orleans District news release",
+    sourceUrl: "https://www.mvn.usace.army.mil/Media/News-Releases/Article/4452708/contract-awarded-for-levee-drainage-structures-navigation-gate-t-wall-and-pump/",
+    dateAdded: "2026-07-03",
+    lastUpdated: "2026-07-03",
+    notes: "Awarded to Pittman-Sealevel LLC for roughly 0.25 miles of levee, two pump stations, drainage structures, a navigation gate, and a T-wall under Interstate 55, as part of the 18.5-mile West Shore Lake Pontchartrain Hurricane and Storm Damage Risk Reduction project. Distinct from the separately tracked Frenier Floodgates (WSLP-103A) contract in the same parish/program; exact navigation gate mechanism (swing vs. sector/lift) not yet confirmed in public reporting — tagged Swing pending confirmation, consistent with the nearby Frenier gate."
+  },
+  {
+    id: "ri-providence-crook-point-bascule-2026",
+    name: "Crook Point Bascule Bridge — Preservation Authority",
+    location: "Providence / East Providence, RI (Seekonk River)",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "State of Rhode Island / RIDOT (pending transfer to new Crook Point Bridge Authority)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD",
+    timeline: "RI House (63-2) and Senate (31-0) passed legislation creating the Crook Point Bridge Authority in April 2026; concurrence votes sent the bill to Gov. Dan McKee in June 2026; awaiting signature as of this check",
+    source: "Rhode Island Current / The Boston Globe / WPRI",
+    sourceUrl: "https://rhodeislandcurrent.com/2026/06/03/things-are-looking-up-for-the-crook-point-bridge/",
+    dateAdded: "2026-07-03",
+    lastUpdated: "2026-07-03",
+    notes: "1908 railroad bascule bridge over the Seekonk River, stuck in the open position for roughly 50 years and previously threatened with demolition. New legislation creates an independent authority (Providence mayor appoints 3 board members, subject to City Council approval) to take ownership from RIDOT for preservation/redevelopment. No design or construction contract yet — flagged as an early-stage signal of future rehab/adaptive-reuse work rather than an active procurement; watch for governor's signature and subsequent authority formation."
+  },
+  {
+    id: "ny-bronx-unionport-bascule-2026",
+    name: "Unionport Bridge Replacement",
+    location: "Bronx, NY (Westchester Creek)",
+    type: "Bascule",
+    stage: "Completed",
+    owner: "New York City DOT",
+    leadFirm: "Hardesty & Hanover (design); Unionport Constructors JV — Schiavone Construction Co. / Lane Construction Corp. (design-build contractor)",
+    competingFirms: [],
+    estValue: "$232M design-build contract",
+    timeline: "Construction substantially completed 2025; ribbon cutting held late 2025",
+    source: "AISC/NSBA 2026 Prize Bridge Award (Movable Span category) / Construction Dive",
+    sourceUrl: "https://www.aisc.org/bridges/prize-bridges/unionport-bridge/",
+    dateAdded: "2026-07-06",
+    lastUpdated: "2026-07-06",
+    notes: "New twin single-leaf bascule spans replacing the 1950s-era Unionport Bridge over Westchester Creek; each single-leaf span carries three lanes, with a dedicated pedestrian walkway and protected bike lane. Innovative geometry minimizes the opening angle by lengthening the span and relocating the bascule pier onto land, reducing the footprint in the creek. Named winner of the 2026 AISC/NSBA Prize Bridge Award in the Movable Span category. Flagged here as a backfilled completed project (per the AISC/NSBA Prize Bridge Awards source category) to document the design/construction team for competitive intelligence — Hardesty & Hanover and the Schiavone/Lane (Unionport Constructors) joint venture — not as an active procurement opportunity."
+  },
+  {
+    id: "wi-fox-river-swing-bridges-foxy-2026",
+    name: "Fox River Swing Bridges Rehabilitation (Green Bay & Appleton)",
+    location: "Green Bay & Appleton, WI (Fox River)",
+    type: "Swing",
+    stage: "Planning / CIP",
+    owner: "Fox Valley & Lake Superior Rail System (Watco)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "~$21.3M estimated combined rehab cost for three bridges ($6.8M Leicht Park/Green Bay, $11.6M Allouez/Georgia-Pacific, $2.9M Appleton); $2.045M FRA CRISI planning/design grant already awarded",
+    timeline: "FY2022 CRISI planning & design grant awarded 2023; construction phase and timeline not yet announced",
+    source: "FRA CRISI Program / Railway Track and Structures / Sen. Tammy Baldwin press release",
+    sourceUrl: "https://www.rtands.com/track-construction/track-structure/bridges-tunnels/fox-valley-and-lake-superior-rail-system-receives-2m-for-three-railroad-swing-bridges/",
+    dateAdded: "2026-07-06",
+    lastUpdated: "2026-07-06",
+    notes: "Three roughly 100-year-old railroad swing bridges carrying the short-line Fox Valley & Lake Superior Rail System (FOXY, a Watco property) across the Fox River in Green Bay and Appleton; frequent stuck-open mechanical failures disrupt both rail and maritime traffic. CRISI grant funds planning/design only — no construction contract, general contractor, or design engineer publicly confirmed yet; early-stage signal to watch for a future design or construction procurement."
+  },
+  {
+    id: "fl-stuart-st-lucie-rail-bascule-2026",
+    name: "St. Lucie River Railroad Bridge Replacement",
+    location: "Stuart, FL",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "Florida East Coast Railway (FEC) / Brightline",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$218M total project ($130.5M federal Multimodal Project Discretionary Grant + $26M FDOT match + FEC/Brightline funding)",
+    timeline: "Design substantially complete 2025; construction began early 2026; completion targeted 2028",
+    source: "Railway Track and Structures / WPTV / CBS12",
+    sourceUrl: "https://www.rtands.com/track-construction/track-structure/bridges-tunnels/brightline-new-st-lucie-river-railroad-bridge-coming-in-2028/",
+    dateAdded: "2026-07-07",
+    lastUpdated: "2026-07-07",
+    notes: "Replaces the 91-year-old single-track bascule bridge over the St. Lucie River, which carries FEC freight and Brightline passenger service, with a new double-track bascule span — increasing vertical clearance from 6.5 ft to 16 ft and horizontal clearance from 50 ft to 90 ft. Backed by a $130.5M federal Multimodal Project Discretionary Grant awarded December 2023 plus a $26M FDOT match; FEC has also pursued CRISI funding to close the remaining ~$31.5M gap. Design and construction firms not yet publicly confirmed."
+  },
+  {
+    id: "ct-bridgeport-congress-street-movable-2026",
+    name: "Congress Street Bridge Replacement",
+    location: "Bridgeport, CT",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "City of Bridgeport, CT",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$57.6M project cost; $24.6M USDOT RAISE grant secured Nov 2025 (bringing total federal funding to $26.9M, including 2009-10 demolition funds)",
+    timeline: "Pre-construction planning stage; solicitations to be issued once planning/environmental work concludes and federal funding reaches the city; construction potentially delayed to early 2027",
+    source: "Government Market News / Office of U.S. Senator Chris Murphy",
+    sourceUrl: "https://www.murphy.senate.gov/newsroom/press-releases/murphy-blumenthal-himes-announce-246-million-for-congress-street-bridge-replacement",
+    dateAdded: "2026-07-07",
+    lastUpdated: "2026-07-07",
+    notes: "Replaces the demolished (2010) 1911 Scherzer rolling-lift double-leaf bascule bridge over the Pequonnock River, closed since 1997; new project scope covers approach-road reconstruction, utility relocation, a new movable span, and bicycle/pedestrian improvements. The $24.6M RAISE grant announced November 2025 is the first major new funding secured since roughly $40M was set aside for a replacement around 2013; this will be the second round of contracting solicitations after all proposals were rejected in 2022. No design or construction firm publicly confirmed yet."
+  },
+  {
+    id: "il-chicago-calumet-river-bascule-2026",
+    name: "Calumet River Bridges Rehabilitation (92nd, 95th, 100th & 106th Street)",
+    location: "Chicago, IL (Calumet River)",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "City of Chicago (CDOT)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$302M total project ($144M federal Bridge Investment Program Large Bridge Grant, awarded Jan 2023)",
+    timeline: "Construction staggered across all four bridges; simultaneous work on 3+ spans from mid-2025 into early 2026; overall completion timeline not yet finalized in public reporting",
+    source: "FHWA Bridge Investment Program / City of Chicago (CDOT)",
+    sourceUrl: "https://highways.dot.gov/newsroom/biden-harris-administration-announces-144-million-improve-four-bridges-over-calumet-river",
+    dateAdded: "2026-07-08",
+    lastUpdated: "2026-07-08",
+    notes: "Rehabilitation of four historic bascule bridges over the Calumet River serving the Illinois International Port and Illinois Waterway (92nd Street/Ewing Avenue, 95th Street, 100th Street, and 106th Street); each bridge opens roughly 5,000 times/year for marine traffic. 92nd, 95th, and 106th Street spans rated in poor condition, 100th Street in serious condition; scope includes mechanical/structural rehab plus sidewalk and bike lane upgrades. Distinct from the already-tracked Lake Street Bascule Bridge, which is on the Chicago River, not the Calumet. Design and construction firms not yet publicly confirmed; worth monitoring for upcoming trade contracts as the program continues."
+  },
+  {
+    id: "ny-buffalo-black-rock-lock-frp-bulkheads-2026",
+    name: "Black Rock Lock FRP Bulkhead Replacement",
+    location: "Buffalo, NY (Black Rock Canal / Niagara River)",
+    type: "Lock Gate",
+    stage: "Design",
+    owner: "USACE Buffalo District",
+    leadFirm: "Basalt International, Inc.",
+    competingFirms: [],
+    estValue: "$6.9M contract",
+    timeline: "Contract awarded April 10, 2026; fabrication expected to take approximately 18 months, with delivery to Black Rock Lock targeted November 2027",
+    source: "U.S. Army / DVIDS",
+    sourceUrl: "https://www.army.mil/article/292069/corps_of_engineers_awards_6_9m_contract_to_modernize_black_rock_lock_with_fiber_reinforced_polymer_bulkheads",
+    dateAdded: "2026-07-09",
+    lastUpdated: "2026-07-09",
+    notes: "Full design and fabrication contract for new fiber reinforced polymer (FRP) bulkheads to replace the original steel 'guard gates' that sit at each end of Black Rock Lock, outside the main miter gates; lighter than steel with a 100-year design life. Part of more than $65M in Black Rock Lock upgrades planned through 2030. Awarded to Basalt International, Inc. of Winterport, ME."
+  },
+  {
+    id: "fl-port-canaveral-lock-frp-sector-gates-2026",
+    name: "Canaveral Lock FRP Sector Gate Replacement",
+    location: "Port Canaveral, FL",
+    type: "Lock Gate",
+    stage: "Design",
+    owner: "USACE Jacksonville District",
+    leadFirm: "Structural Composites Inc.",
+    competingFirms: [],
+    estValue: "$9M+ contract",
+    timeline: "Contract awarded (announced February 5, 2026); design, fabrication, and delivery of two FRP sector gates and associated components underway",
+    source: "GlobeNewswire / Structural Composites Inc.",
+    sourceUrl: "https://www.globenewswire.com/news-release/2026/02/05/3233142/0/en/Structural-Composites-Inc-Awarded-9M-Army-Corps-of-Engineers-Contract-for-Canaveral-FRP-Sector-Gate-Project.html",
+    dateAdded: "2026-07-09",
+    lastUpdated: "2026-07-09",
+    notes: "Competitively bid USACE contract for design, fabrication, and delivery of two fiber reinforced polymer (FRP) sector gates for the Canaveral Lock; upon completion, will be the largest FRP structures ever deployed by USACE, part of the agency's transition from steel to composite gate systems. Awarded to Structural Composites Inc. (Melbourne, FL)."
+  },
+  {
+    id: "ok-webbers-falls-lock-dam-16-tainter-gates-2026",
+    name: "Webbers Falls Lock and Dam 16 Tainter Gate Replacement and Repair",
+    location: "Webbers Falls, OK (McClellan-Kerr Arkansas River Navigation System)",
+    type: "Dam Gate",
+    stage: "Under Construction",
+    owner: "USACE Tulsa District",
+    leadFirm: "McMillen Incorporated",
+    competingFirms: [],
+    estValue: "$28M contract",
+    timeline: "Contract awarded September 30, 2025 (USACE Tulsa District's final FY2025 contract); Tainter Gate 7 replacement and repairs to Gates 8 and 11 underway",
+    source: "U.S. Army / DVIDS",
+    sourceUrl: "https://www.army.mil/article/288864/tulsa_district_awards_final_fy_25_contract_for_webbers_falls_gate_replacement",
+    dateAdded: "2026-07-09",
+    lastUpdated: "2026-07-09",
+    notes: "Replacement of Tainter Gate 7 and repair of Tainter Gates 8 and 11 at Webbers Falls Lock and Dam 16, one of five locks and dams on the Tulsa District's 445-mile McClellan-Kerr Arkansas River Navigation System. Awarded to McMillen Incorporated (Boise, ID)."
+  },
+  {
+    id: "nj-newark-kearny-point-no-point-bascule-2025",
+    name: "Point-No-Point Bridge Replacement",
+    location: "Newark / Kearny, NJ (Passaic River)",
+    type: "Bascule",
+    stage: "Completed",
+    owner: "Conrail (North Jersey Shared Assets Area)",
+    leadFirm: "Modjeski and Masters / Jacobs Engineering (design); George Harms Construction Company (contractor)",
+    competingFirms: [],
+    estValue: "$200M total, funded by Conrail plus $78M+ in combined grants",
+    timeline: "Construction began July 2022; completed and opened November 17, 2025",
+    source: "Railway Track and Structures",
+    sourceUrl: "https://www.rtands.com/track-construction/track-structure/bridges-tunnels/conrail-celebrates-point-no-point-bridge-replacement/",
+    dateAdded: "2026-07-09",
+    lastUpdated: "2026-07-10",
+    notes: "New single-leaf bascule bridge replacing the 1901 swing bridge on Conrail's Passaic & Harsimus Line (used by CSX Transportation and Norfolk Southern) over the Passaic River between Newark and Kearny; new span opens/closes in under 10 minutes versus 5+ hours for the original structure. Backfilled here (similar to the already-tracked Unionport Bridge) to document the design/construction team for competitive intelligence rather than as an active procurement opportunity. Cost confirmed via Progressive Railroading as a $200M project funded by Conrail plus more than $78M in combined grants, updating the previously undisclosed estimated value."
+  },
+  {
+    id: "mn-st-paul-roberts-street-bascule-2026",
+    name: "Roberts Street Railroad Bridge Replacement",
+    location: "St. Paul, MN (Mississippi River)",
+    type: "Bascule",
+    stage: "Under Construction",
+    owner: "Union Pacific Railroad",
+    leadFirm: "Lunda Construction (Tutor Perini subsidiary)",
+    competingFirms: [],
+    estValue: "Undisclosed (to be reflected in Tutor Perini's Q2 2026 backlog)",
+    timeline: "Contract awarded and announced July 7, 2026; work begins July 2026; substantial completion targeted December 2029",
+    source: "BusinessWire / Tutor Perini Corporation",
+    sourceUrl: "https://www.businesswire.com/news/home/20260707285275/en/Lunda-Construction-Awarded-Roberts-Street-Railroad-Bridge-Replacement-Project-in-Minnesota",
+    dateAdded: "2026-07-10",
+    lastUpdated: "2026-07-10",
+    notes: "Replaces the 113-year-old Waddell & Harrington-designed vertical lift bridge (built 1912 for the Chicago Great Western Railroad, later C&NW, now Union Pacific) over the Mississippi River with a new 215-ft rolling bascule truss span. Scope includes replacement of six steel approach bridges, rehabilitation of existing concrete piers, removal of timber protection walls, a new steel pile protection wall with a 38-ft sand-filled crash bumper, and a new operations building support platform; existing bridge stays in service for rail and marine traffic during construction. Awarded to Lunda Construction, a Tutor Perini Corporation subsidiary."
+  },
+  {
+    id: "nm-sumner-dam-radial-gates-2026",
+    name: "Sumner Dam Radial Gates Replacement",
+    location: "De Baca County, NM (Pecos River, near Fort Sumner)",
+    type: "Dam Gate",
+    stage: "Planning / CIP",
+    owner: "Bureau of Reclamation",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "TBD (Bipartisan Infrastructure Law extraordinary maintenance funding)",
+    timeline: "Revised Draft Environmental Assessment supplemental public comment period closed September 13, 2025; Final EA / Finding of No Significant Impact (FONSI) in preparation via Reclamation's Albuquerque Area Office; construction contract not yet solicited as of this check",
+    source: "Bureau of Reclamation — Upper Colorado Basin / Albuquerque Area Office",
+    sourceUrl: "https://www.usbr.gov/uc/progact/sumner/index.html",
+    dateAdded: "2026-07-13",
+    lastUpdated: "2026-07-13",
+    notes: "Maintenance project to address structural deterioration of the three radial-arm spillway gates at Sumner Dam on the Pecos River, roughly 16 miles northwest of Fort Sumner. After 89 years of service the three existing radial gates will be retired and replaced with new gates meeting current design standards. Covered by Reclamation's dam asset management / dam safety program rather than USACE civil works; NEPA (EA/FONSI) stage with no design or construction firm and no contract value publicly confirmed yet — early-stage signal to watch for an upcoming gate fabrication/installation procurement."
+  },
+  {
+    id: "in-ky-fourteenth-street-clagg-lift-span-2026",
+    name: "Fourteenth Street Bridge (Clagg Lift Span) Rehabilitation",
+    location: "Louisville, KY / Clarksville, IN (Ohio River)",
+    type: "Vertical Lift",
+    stage: "Design",
+    owner: "Louisville & Indiana Railroad (Anacostia Rail Holdings)",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "~$13M total ($6,492,000 FRA CRISI grant + 50% non-federal match)",
+    timeline: "CRISI grant awarded; scope covers project development, final design, and construction of the lift-span improvements; construction schedule not yet publicly announced",
+    source: "Railway Track and Structures / Progressive Railroading / AJOT",
+    sourceUrl: "https://www.rtands.com/uncategorized/louisville-indiana-railroad-awarded-6m-for-ohio-river-bridge/",
+    dateAdded: "2026-07-14",
+    lastUpdated: "2026-07-14",
+    notes: "The Clagg lift span is the vertical-lift draw portion of the Fourteenth Street (Pennsylvania Railroad) Bridge over the Ohio River, built circa 1918 to replace an earlier swing span; it carries Louisville & Indiana Railroad (LIRC, an Anacostia Rail Holdings short line) freight between Louisville and Indianapolis and connects Louisville, KY with Clarksville, IN. A U.S. DOT FRA Consolidated Rail Infrastructure & Safety Improvements (CRISI) matching grant of $6,492,000 funds project development, final design, and construction to improve the lift span, with LIRC contributing the 50% non-federal match. Surfaced via the FRA CRISI grant source category; no design or construction firm publicly confirmed yet — early-stage signal to watch for an upcoming design or construction procurement on a movable rail span."
+  },
+  {
+    id: "tx-bolivar-roads-gate-system-2026",
+    name: "Bolivar Roads Gate System (\"The Gate\")",
+    location: "Galveston / Bolivar Peninsula, TX (Bolivar Roads, Galveston Bay entrance)",
+    type: "Swing",
+    stage: "Design",
+    owner: "Gulf Coast Protection District (GCPD)",
+    leadFirm: "Jacobs (design — master services agreement)",
+    competingFirms: [],
+    estValue: "~$35B total Coastal Texas Project (federal share ~65%); Galveston Bay Barrier System is ~85% of that; The Gate is one of seven features of the barrier system",
+    timeline: "Jacobs design contract (master services agreement) announced February 5, 2026; phased delivery — no specific construction start or completion date set as of this check",
+    source: "Jacobs / Gulf Coast Protection District / Construction Dive",
+    sourceUrl: "https://www.jacobs.com/newsroom/press-release/jacobs-design-one-worlds-largest-coastal-gate-systems-along-texas-gulf-coast",
+    dateAdded: "2026-07-15",
+    lastUpdated: "2026-07-15",
+    notes: "Central movable-gate element of the USACE-led Coastal Texas Project, spanning the Bolivar Roads strait connecting the Gulf of Mexico to Galveston Bay. Uses large navigable sector gates (tagged Swing here, consistent with the WSLP navigation-gate precedent) to close off storm surge while allowing continued Houston Ship Channel maritime traffic; expected to be among the world's largest coastal storm surge barrier gate systems, protecting 6M+ residents and ~$800B in regional assets. GCPD is the non-federal sponsor partnering with USACE Galveston District and the Texas General Land Office. Jacobs (already engaged elsewhere in the tracker) holds the design master services agreement, announced February 2026; no gate-fabrication or construction contractor selected yet — early-stage design signal on a very large movable-gate program."
+  },
+  {
+    id: "pa-philadelphia-navy-yard-26th-street-lift-2026",
+    name: "26th Street Lift Bridge Rehabilitation (Navy Yard)",
+    location: "Philadelphia, PA (Reserve Basin, Navy Yard)",
+    type: "Vertical Lift",
+    stage: "Design",
+    owner: "PIDC / Philadelphia Authority for Industrial Development",
+    leadFirm: "Not yet publicly confirmed",
+    competingFirms: [],
+    estValue: "$1.6M federal Community Project Funding (design of long-term rehab) + $250K state LSA (immediate repairs)",
+    timeline: "Immediate repairs targeted for completion end of 2025; $1.6M grant funds design of long-term rehabilitation; construction schedule not yet announced",
+    source: "Navy Yard (PIDC) / PIDC contracts portal",
+    sourceUrl: "https://navyyard.org/blog/pidc-receives-grant-for-lift-bridge-repairs/",
+    dateAdded: "2026-07-15",
+    lastUpdated: "2026-07-15",
+    notes: "Built 1942, last rehabilitated 2003; the 26th Street Lift Bridge is the critical vehicular access point over the Reserve Basin into the Navy Yard's industrial core and has suffered multiple failures (traffic backups and stranded vessels) since 2003. A $1.6M federal Community Project Funding grant supports above- and below-water reconstruction of structural, mechanical, and electrical systems plus a full fender-system replacement, and funds design for a longer-term rehabilitation; a separate $250K state LSA award covers immediate repairs. Surfaced via trade-press coverage of the PIDC grant; a South 26th Street Bridge contract listing is active on the PIDC procurement portal. No design or construction firm publicly confirmed yet."
+  }
+];
+
+// ---------------------------------------------------------------------------
+// CONTACT LOOKUP TABLES
+// Separate from PROJECTS so the nightly scheduled task's data contract for
+// the array above is untouched. Keyed by exact owner string / matched
+// substring within leadFirm or competingFirms. Add new entries here as new
+// owners or firms appear; unmatched names simply render with no contact line.
+// ---------------------------------------------------------------------------
+const OWNER_CONTACTS = {
+  "Cape May County, NJ (County Engineering)": { website: "capemaycountynj.gov/601/Department-of-Engineering", phone: "(609) 465-1035" },
+  "Alaska DOT&PF": { website: "dot.alaska.gov/sereg", phone: "(907) 465-1763" },
+  "City of Sacramento": { website: "cityofsacramento.gov/public-works", phone: "(916) 808-5067" },
+  "Government of Bermuda": { website: "gov.bm/ministry/public-works", phone: "+1 441-297-7842" },
+  "MBTA": { website: "mbta.com", phone: "1-800-392-6100" },
+  "NJ Transit": { website: "njtransit.com", phone: "(973) 275-5555" },
+  "Florida DOT (District 1)": { website: "fdot.gov", phone: "(863) 519-2300" },
+  "Cape May County Bridge Commission": { website: "capemaycountynj.gov/647/Bridge-Commission", phone: "(609) 465-7806" },
+  "CSX / Amtrak (NY State funded)": { website: "railroads.dot.gov/crisi", phone: "(202) 493-6024" },
+  "USACE Seattle District": { website: "nws.usace.army.mil", phone: "(206) 764-3742" },
+  "USACE St. Paul District": { website: "mvp.usace.army.mil", phone: "(651) 290-5807" },
+  "USACE Nashville District": { website: "lrn.usace.army.mil", phone: "(615) 736-5115" },
+  "Bureau of Reclamation": { website: "usbr.gov/assetmanagement/dams.html", phone: "(202) 513-0501" },
+  "Burlington County Bridge Commission": { website: "bcbridges.org", phone: "(856) 829-1900" },
+  "MassDOT": { website: "mass.gov/orgs/massachusetts-department-of-transportation", phone: "(857) 368-4636" },
+  "Michigan DOT": { website: "michigan.gov/mdot", phone: "(517) 373-2090" },
+  "CTDOT": { website: "portal.ct.gov/dot", phone: "(860) 594-2560" },
+  "City of Cleveland": { website: "clevelandohio.gov", phone: "(216) 664-2000" },
+  "USACE Detroit District": { website: "lrd.usace.army.mil/detroit", phone: "(888) 694-8313" },
+  "Sarasota County": { website: "scgov.net/government/public-works", phone: "(941) 861-5000" },
+  "City of Chicago (CDOT)": { website: "chicago.gov/cdot", phone: "(312) 744-3600" },
+  "Amtrak": { website: "media.amtrak.com", phone: "(800) 562-1904" },
+  "USACE Rock Island District": { website: "mvr.usace.army.mil", phone: "(309) 794-4200" },
+  "USACE Omaha District": { website: "nwo.usace.army.mil", phone: "(402) 995-2229" },
+  "BNSF Railway": { website: "bnsf.com/news-media/media-requests.page", phone: "1-888-428-2673" },
+  "NYSDOT": { website: "dot.ny.gov", phone: "(518) 457-6195" },
+  "City of Duluth, MN": { website: "duluthmn.gov/engineering", phone: "(218) 730-5200" },
+  "USACE Pittsburgh District": { website: "lrp.usace.army.mil", phone: "(412) 395-7500" },
+  "Multnomah County, OR": { website: "multco.us/programs/bridges", phone: "(503) 988-5050" },
+  "USACE New Orleans District": { website: "mvn.usace.army.mil", phone: "(504) 862-2201" },
+  "State of Rhode Island / RIDOT (pending transfer to new Crook Point Bridge Authority)": { website: "dot.ri.gov", phone: "(401) 222-2450" },
+  "New York City DOT": { website: "nyc.gov/dot", phone: "311" },
+  "Fox Valley & Lake Superior Rail System (Watco)": { website: "watco.com/service/fox-valley-and-lake-superior-foxy", phone: "(620) 231-2230" },
+  "Florida East Coast Railway (FEC) / Brightline": { website: "fecrwy.com/contact", phone: "(904) 538-6100" },
+  "City of Bridgeport, CT": { website: "bridgeportct.gov/government/departments/public-facilities", phone: "(203) 576-7130" },
+  "USACE Buffalo District": { website: "lrb.usace.army.mil", phone: "(716) 879-4410" },
+  "USACE Jacksonville District": { website: "saj.usace.army.mil", phone: "(904) 232-2568" },
+  "USACE Tulsa District": { website: "swt.usace.army.mil", phone: "(918) 669-7366" },
+  "Conrail (North Jersey Shared Assets Area)": { website: "conrail.com", phone: "1-800-456-7509" },
+  "Union Pacific Railroad": { website: "up.com", phone: "(402) 544-5000" },
+  "Louisville & Indiana Railroad (Anacostia Rail Holdings)": { website: "lirailroad.com", phone: "(812) 288-0898" },
+  "Gulf Coast Protection District (GCPD)": { website: "gcpdtexas.com", phone: "Contact via gcpdtexas.com/newsroom" },
+  "PIDC / Philadelphia Authority for Industrial Development": { website: "pidcphila.com/contact-us", phone: "(215) 496-8020" }
+};
+
+const FIRM_CONTACTS = [
+  { match: "Modjeski and Masters", name: "Modjeski and Masters", website: "modjeski.com", phone: "(717) 790-9565" },
+  { match: "Hardesty & Hanover", name: "Hardesty & Hanover", website: "hardestyhanover.com", phone: "(212) 944-1150" },
+  { match: "Skanska", name: "Skanska USA", website: "usa.skanska.com", phone: "+1 718 340 0777" },
+  { match: "VHB", name: "VHB", website: "vhb.com", phone: "(617) 924-1770" },
+  { match: "Gannett Fleming", name: "Gannett Fleming", website: "gannettfleming.com", phone: "(717) 763-7211" },
+  { match: "AECOM", name: "AECOM", website: "aecom.com", phone: "+1 (972) 788-1000" },
+  { match: "Mott MacDonald", name: "Mott MacDonald", website: "mottmac.com", phone: "+44 20 7651 0300" },
+  { match: "Ramboll", name: "Ramboll UK", website: "ramboll.co.uk", phone: "020 7631 5291" },
+  { match: "Eadon Consulting", name: "Eadon Consulting", website: "eadonconsulting.co.uk", phone: "+44 114 399 0400" },
+  { match: "Knight Architects", name: "Knight Architects", website: "knightarchitects.co.uk", phone: "+44 (0)20 3978 1555" },
+  { match: "Knight Construction & Supply", name: "Knight Construction & Supply, Inc.", website: "knightconst.com", phone: "(509) 276-2229" },
+  { match: "Middlesex Corporation", name: "The Middlesex Corporation", website: "middlesexco.com", phone: "(978) 742-4400" },
+  { match: "WSP", name: "WSP USA", website: "wsp.com", phone: "(212) 465-5000" },
+  { match: "Granite Construction", name: "Granite Construction", website: "graniteconstruction.com", phone: "(831) 724-1011" },
+  { match: "Kraemer North America", name: "Kraemer North America", website: "kraemerna.com", phone: "(763) 478-2535" },
+  { match: "G&G Steel", name: "G&G Steel, Inc.", website: "ggsteel.com", phone: "(256) 332-6652" },
+  { match: "Ames Federal Contracting Group", name: "Ames Federal Contracting Group", website: "amesfederal.com", phone: "(952) 435-7106" },
+  { match: "C.J. Mahan Construction", name: "C.J. Mahan Construction Company LLC", website: "cjmahan.com", phone: "(740) 369-3404" },
+  { match: "O&G Industries", name: "O&G Industries", website: "ogind.com", phone: "(860) 489-9261" },
+  { match: "Tutor Perini", name: "Tutor Perini", website: "tutorperini.com", phone: "(818) 362-8391" },
+  { match: "Kokosing Alberici Traylor", name: "Kokosing Alberici Traylor LLC (KAT)", website: "kokosing.biz", phone: "(614) 212-5700" },
+  { match: "Trumbull-Brayman", name: "Trumbull-Brayman Construction Corporation JV", website: "brayman.com", phone: "(412) 722-3000" },
+  { match: "Mohawk Northeast", name: "Mohawk Northeast, Inc.", website: "mohawknortheast.com", phone: "(860) 628-9490" },
+  { match: "HDR", name: "HDR, Inc.", website: "hdrinc.com", phone: "(402) 399-1000" },
+  { match: "Pittman-Sealevel", name: "M.R. Pittman Group, LLC", website: "mrpittman.com", phone: "(504) 733-3040" },
+  { match: "Lane Construction", name: "The Lane Construction Corporation", website: "laneconstruct.com", phone: "(704) 553-6500" },
+  { match: "Schiavone Construction", name: "Schiavone Construction Co.", website: "schiavoneconstruction.com", phone: "(201) 867-5070" },
+  { match: "Basalt International", name: "Basalt International, Inc.", website: "basaltintl.com", phone: "+1 (888) 491-1516" },
+  { match: "Structural Composites", name: "Structural Composites Inc.", website: "structuralcomposites.com", phone: "(321) 951-9464" },
+  { match: "McMillen", name: "McMillen Incorporated", website: "mcmillen.com", phone: "(208) 342-4214" },
+  { match: "George Harms Construction", name: "George Harms Construction Company", website: "ghcci.com", phone: "(732) 938-4004" },
+  { match: "Jacobs Engineering", name: "Jacobs Engineering", website: "jacobs.com", phone: "(214) 638-0145" },
+  { match: "Lunda Construction", name: "Lunda Construction Company", website: "lundaconstruction.com", phone: "(715) 284-9491" }
+];
+
+function getOwnerContact(owner) {
+  return OWNER_CONTACTS[owner] || null;
+}
+
+function getFirmContactsForString(str) {
+  if (!str) return [];
+  return FIRM_CONTACTS.filter(f => str.includes(f.match));
+}
+
+function getAllFirmContacts(p) {
+  const matches = [
+    ...getFirmContactsForString(p.leadFirm),
+    ...(p.competingFirms || []).flatMap(f => getFirmContactsForString(f))
+  ];
+  const seen = new Set();
+  return matches.filter(f => !seen.has(f.name) && seen.add(f.name));
+}
+
+// ---------------------------------------------------------------------------
+// USER-ADDED PROJECTS — persisted in localStorage so manual entries survive refresh
+// ---------------------------------------------------------------------------
+const HMS_ADDED_KEY = 'hms_added_projects';
+
+function getAddedProjects() {
+  try { return JSON.parse(localStorage.getItem(HMS_ADDED_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveAddedProject(proj) {
+  const existing = getAddedProjects();
+  existing.push(proj);
+  try { localStorage.setItem(HMS_ADDED_KEY, JSON.stringify(existing)); } catch(e) {}
+}
+
+function getAllProjects() {
+  return [...PROJECTS, ...getAddedProjects()];
+}
+
+function openAddModal() {
+  document.getElementById('addProjectForm').reset();
+  document.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+  document.getElementById('addModal').classList.add('visible');
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('visible');
+}
+
+function submitAddProject() {
+  const val = id => document.getElementById(id).value.trim();
+  const required = [
+    ['addName',      'addNameErr'],
+    ['addLocation',  'addLocErr'],
+    ['addOwner',     'addOwnerErr'],
+    ['addSource',    'addSrcErr'],
+    ['addSourceUrl', 'addSrcUrlErr']
+  ];
+  let valid = true;
+  required.forEach(([fieldId, errId]) => {
+    const err = document.getElementById(errId);
+    if (!val(fieldId)) { err.style.display = 'block'; valid = false; }
+    else { err.style.display = 'none'; }
+  });
+  if (!valid) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const competingRaw = val('addCompeting');
+  const competingFirms = competingRaw ? competingRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+  const proj = {
+    id: 'user-' + Date.now(),
+    name:          val('addName'),
+    location:      val('addLocation'),
+    type:          document.getElementById('addType').value,
+    stage:         document.getElementById('addStage').value,
+    owner:         val('addOwner'),
+    leadFirm:      val('addLeadFirm') || 'Not yet publicly confirmed',
+    competingFirms,
+    estValue:      val('addEstValue') || 'TBD',
+    timeline:      val('addTimeline') || 'TBD',
+    source:        val('addSource'),
+    sourceUrl:     val('addSourceUrl'),
+    dateAdded:     today,
+    lastUpdated:   today,
+    notes:         val('addNotes')
+  };
+
+  saveAddedProject(proj);
+  closeAddModal();
+  renderUpdatesBanner();
+  render();
+}
+
+// ---------------------------------------------------------------------------
+// DELETED PROJECTS — persisted in localStorage so removals survive refresh
+// ---------------------------------------------------------------------------
+const HMS_DELETED_KEY = 'hms_deleted_project_ids';
+
+function getDeletedIds() {
+  try { return new Set(JSON.parse(localStorage.getItem(HMS_DELETED_KEY) || '[]')); }
+  catch(e) { return new Set(); }
+}
+
+function saveDeletedId(id) {
+  const ids = getDeletedIds();
+  ids.add(id);
+  try { localStorage.setItem(HMS_DELETED_KEY, JSON.stringify([...ids])); } catch(e) {}
+}
+
+function confirmDelete(id) {
+  const proj = getAllProjects().find(p => p.id === id);
+  const name = proj ? proj.name : id;
+  document.getElementById('deleteModalBody').innerHTML =
+    `Are you sure you want to delete <strong>${name}</strong>?` +
+    `<br><br>Deletions cannot be restored.`;
+  document.getElementById('deleteModalConfirm').onclick = () => executeDelete(id);
+  document.getElementById('deleteModal').classList.add('visible');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('visible');
+}
+
+function executeDelete(id) {
+  saveDeletedId(id);
+  closeDeleteModal();
+  renderUpdatesBanner();
+  render();
+}
+
+// Close modals if user clicks the backdrop
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+  document.getElementById('addModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAddModal();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// RENDER LOGIC (no edits needed by the scheduled task below this line)
+// ---------------------------------------------------------------------------
+function stageBadgeClass(stage) {
+  const map = {
+    "Planning / CIP": "planning",
+    "Pre-RFP": "pre-rfp",
+    "RFQ/RFP Issued": "rfp",
+    "Design": "design",
+    "Under Construction": "construction",
+    "Completed": "completed"
+  };
+  return map[stage] || "planning";
+}
+
+function formatDateShort(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function freshBadgeHtml(p) {
+  const updatedStr = p.lastUpdated || p.dateAdded;
+  const updatedDate = new Date(updatedStr + 'T00:00:00');
+  const now = new Date();
+  const diffDays = Math.floor((now - updatedDate) / 86400000);
+  if (isNaN(diffDays) || diffDays < 0 || diffDays >= 7) return '';
+  const isNew = updatedStr === p.dateAdded;
+  const label = isNew ? 'New' : 'Updated';
+  return `<div class="fresh-badge${isNew ? '' : ' updated'}">${label} ${formatDateShort(updatedDate)}</div>`;
+}
+
+function renderUpdatesBanner() {
+  const banner = document.getElementById('updatesBanner');
+  // Driven by the SpanWatch nightly check: anything the most recent run
+  // touched has lastUpdated === LAST_CHECKED. dateAdded === lastUpdated means
+  // it's a brand-new listing; otherwise it's an existing project the check
+  // changed something on.
+  const deletedIds = getDeletedIds();
+  const todays = PROJECTS.filter(p => !deletedIds.has(p.id) && p.lastUpdated === LAST_CHECKED);
+
+  if (todays.length === 0) {
+    banner.className = 'updates-banner';
+    banner.innerHTML = '';
+    return;
+  }
+
+  banner.className = 'updates-banner has-updates';
+  banner.innerHTML = `
+    <div class="updates-banner-title">Latest from the nightly check <span class="as-of">— ${LAST_CHECKED}</span></div>
+    <div class="updates-list">
+      ${todays.map(p => {
+        const isNew = p.lastUpdated === p.dateAdded;
+        return `<a class="update-chip" href="#project-${p.id}" onclick="jumpToProject('${p.id}');return false;"><span class="tag ${isNew ? 'new' : 'updated'}">${isNew ? 'New' : 'Updated'}</span>${p.name}</a>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function render() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const typeF = document.getElementById('typeFilter').value;
+  const stageF = document.getElementById('stageFilter').value;
+  const grid = document.getElementById('grid');
+
+  const deletedIds = getDeletedIds();
+  const active = getAllProjects().filter(p => !deletedIds.has(p.id));
+
+  const filtered = active.filter(p => {
+    const matchesQ = !q || (p.name + p.location + (p.leadFirm||'') + (p.competingFirms||[]).join(' ')).toLowerCase().includes(q);
+    const matchesType = !typeF || p.type === typeF;
+    const matchesStage = !stageF || p.stage === stageF;
+    return matchesQ && matchesType && matchesStage;
+  });
+
+  document.getElementById('resultCount').textContent = filtered.length + ' shown';
+  document.getElementById('projectCount').textContent = active.length;
+  document.getElementById('lastChecked').textContent = LAST_CHECKED;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">No tracked projects match these filters yet.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => {
+    const oc = getOwnerContact(p.owner);
+    const firmContacts = getAllFirmContacts(p);
+    return `
+    <div class="card" id="project-${p.id}">
+      <div class="card-top">
+        <div>
+          ${freshBadgeHtml(p)}
+          <div class="card-title">${p.name}</div>
+          <div class="card-loc">${p.location}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <button class="btn-delete" onclick="confirmDelete('${p.id}')">✕ Delete</button>
+          <span class="badge ${stageBadgeClass(p.stage)}">${p.stage}</span>
+        </div>
+      </div>
+      <span class="type-tag">${p.type}</span>
+      <div class="row"><span class="label">Owner</span><span class="val">${p.owner}</span></div>
+      ${oc ? `<div class="row"><span class="label">Owner contact</span><span class="val"><a href="https://${oc.website}" target="_blank" rel="noopener">${oc.website}</a> · ${oc.phone}</span></div>` : ''}
+      <div class="row"><span class="label">Est. value</span><span class="val">${p.estValue || 'TBD'}</span></div>
+      <div class="row"><span class="label">Timeline</span><span class="val">${p.timeline || 'TBD'}</span></div>
+      <div class="firms">
+        <div class="label">Engineering firm(s)</div>
+        <span class="firm-pill${(p.leadFirm && p.leadFirm !== 'Not yet publicly confirmed') ? '' : ' lead'}">${p.leadFirm || 'Unconfirmed'}</span>
+        ${(p.competingFirms||[]).map(f => `<span class="firm-pill">${f}</span>`).join('')}
+        ${firmContacts.map(f => `<div class="contact-line"><span class="contact-name">${f.name}</span> — <a href="https://${f.website}" target="_blank" rel="noopener">${f.website}</a> · ${f.phone}</div>`).join('')}
+      </div>
+      ${p.notes ? `<div class="row" style="border-top:1px solid #E4E7E9; margin-top:10px; padding-top:10px;"><span class="val" style="text-align:left; max-width:100%;">${p.notes}</span></div>` : ''}
+      <div class="card-footer">
+        <span>Added ${p.dateAdded}</span>
+        <a href="${p.sourceUrl}" target="_blank" rel="noopener">Source: ${p.source} →</a>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+function jumpToProject(id) {
+  document.getElementById('searchBox').value = '';
+  document.getElementById('typeFilter').value = '';
+  document.getElementById('stageFilter').value = '';
+  render();
+  const el = document.getElementById('project-' + id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.remove('jump-highlight');
+  // restart animation even if clicked twice in a row
+  void el.offsetWidth;
+  el.classList.add('jump-highlight');
+  setTimeout(() => el.classList.remove('jump-highlight'), 1900);
+}
+
+document.getElementById('searchBox').addEventListener('input', render);
+document.getElementById('typeFilter').addEventListener('change', render);
+document.getElementById('stageFilter').addEventListener('change', render);
+renderUpdatesBanner();
+render();
+</script>
+
+<!-- ADD PROJECT MODAL -->
+<div class="add-modal-overlay" id="addModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+  <div class="add-modal-box">
+    <div class="add-modal-title" id="addModalTitle">Add a Project</div>
+    <form id="addProjectForm" onsubmit="return false;">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="addName">Project Name <span class="req">*</span></label>
+          <input class="form-input" id="addName" type="text" placeholder="Full project name">
+          <div class="form-error" id="addNameErr">Required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="addLocation">Location <span class="req">*</span></label>
+          <input class="form-input" id="addLocation" type="text" placeholder="City, State (waterway)">
+          <div class="form-error" id="addLocErr">Required</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="addType">Structure Type</label>
+          <select class="form-select" id="addType">
+            <option>Bascule</option>
+            <option>Vertical Lift</option>
+            <option>Swing</option>
+            <option>Retractable/Folding</option>
+            <option>Curling</option>
+            <option>Lock Gate</option>
+            <option>Dam Gate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="addStage">Stage</label>
+          <select class="form-select" id="addStage">
+            <option>Planning / CIP</option>
+            <option>Pre-RFP</option>
+            <option>RFQ/RFP Issued</option>
+            <option>Design</option>
+            <option>Under Construction</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="addOwner">Owner <span class="req">*</span></label>
+        <input class="form-input" id="addOwner" type="text" placeholder="Agency or owner name">
+        <div class="form-error" id="addOwnerErr">Required</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="addLeadFirm">Lead Firm</label>
+          <input class="form-input" id="addLeadFirm" type="text" placeholder="Engineering firm (or leave blank)">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="addCompeting">Competing Firms</label>
+          <input class="form-input" id="addCompeting" type="text" placeholder="Comma-separated if multiple">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="addEstValue">Est. Value</label>
+          <input class="form-input" id="addEstValue" type="text" placeholder="e.g. $45M">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="addTimeline">Timeline</label>
+          <input class="form-input" id="addTimeline" type="text" placeholder="e.g. RFP expected Q3 2026">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="addSource">Source Name <span class="req">*</span></label>
+          <input class="form-input" id="addSource" type="text" placeholder="Publication or agency">
+          <div class="form-error" id="addSrcErr">Required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="addSourceUrl">Source URL <span class="req">*</span></label>
+          <input class="form-input" id="addSourceUrl" type="url" placeholder="https://...">
+          <div class="form-error" id="addSrcUrlErr">Required</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="addNotes">Notes</label>
+        <textarea class="form-textarea" id="addNotes" placeholder="Any additional context about the project..."></textarea>
+      </div>
+    </form>
+    <div class="add-modal-actions">
+      <button class="modal-btn cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="modal-btn confirm" onclick="submitAddProject()">Add Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+  <div class="modal-box">
+    <div class="modal-title" id="deleteModalTitle">Remove Project</div>
+    <div class="modal-body" id="deleteModalBody"></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="modal-btn confirm" id="deleteModalConfirm">Yes, Remove It</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
