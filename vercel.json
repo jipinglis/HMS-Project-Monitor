@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/spanwatch-landing.html" }
+  ]
+}
