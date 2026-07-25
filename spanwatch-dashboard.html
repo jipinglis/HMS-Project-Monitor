@@ -181,7 +181,7 @@
 // computed live from today's date — no manual removal needed, it ages out on
 // its own after a week.
 // ---------------------------------------------------------------------------
-const LAST_CHECKED = "2026-07-24";
+const LAST_CHECKED = "2026-07-25";
 
 const PROJECTS = [
   {
@@ -1152,6 +1152,23 @@ const PROJECTS = [
     dateAdded: "2026-07-21",
     lastUpdated: "2026-07-21",
     notes: "The Portage Lake Lift Bridge (aka the Houghton–Hancock Bridge) is a double-deck vertical lift bridge built 1959, carrying US-41/M-26 over Portage Lake between Houghton and Hancock in Michigan's Upper Peninsula — often cited as the world's heaviest double-deck lift bridge. MDOT is advancing a rehabilitation using the CMGC delivery method (RFQ issued May 2025) with Hardesty & Hanover as Engineer of Record; follows earlier ~$3.9M (2020–2022) structural/mechanical/electrical and ~$4.3M (2023) elevator/repair phases. Surfaced via MDOT's innovative-contracting portal; CMGC contractor not yet publicly confirmed."
+  },
+  {
+    id: "al-bwt-demopolis-coffeeville-miter-gates-2026",
+    name: "Demopolis & Coffeeville Lock Lower Miter Gate Replacement",
+    location: "Demopolis Lock (Demopolis, AL) & Coffeeville Lock (Coffeeville, AL), Black Warrior-Tombigbee Waterway",
+    type: "Lock Gate",
+    stage: "Under Construction",
+    owner: "USACE Mobile District",
+    leadFirm: "G&G Steel, Inc. (Demopolis gates); Steward Machine Company (Coffeeville gates)",
+    competingFirms: [],
+    estValue: "$18.3M contract (Demopolis/original combined award, W91278-24-C-0023, to G&G Steel); separate Coffeeville lower miter gate contract to Steward Machine Company (value not yet public)",
+    timeline: "Demopolis lower miter gates in fabrication by G&G Steel (Florence, AL & Iuka, MS), delivery summer 2027, install via 30-day closure; Coffeeville lower miter gates in fabrication by Steward Machine Company, delivery summer 2029",
+    source: "Waterways Journal (Warrior-Tombigbee Waterway Association annual meeting) / DoD Contract Awards",
+    sourceUrl: "https://www.waterwaysjournal.net/2026/05/29/warrior-tom-meeting-stresses-infrastructure/",
+    dateAdded: "2026-07-25",
+    lastUpdated: "2026-07-25",
+    notes: "Replacement of the lower miter gates at two USACE Mobile District navigation locks on the Black Warrior-Tombigbee Waterway. Each gate leaf is roughly 55 ft tall x 62 ft wide, ~445,000 lbs. The Demopolis gates (following the 2024 upper miter gate sill failure that closed the lock) are being fabricated by G&G Steel under the original combined ~$18.3M award (W91278-24-C-0023, Oct 2024); installation requires a ~30-day closure during which the Corps also plans to repair lock-floor damage from the 2024 sill failure. Coffeeville's lower miter gates were awarded under a separate contract to Steward Machine Company (Birmingham, AL), with delivery expected summer 2029. Surfaced via Waterways Journal coverage of the May 2026 Warrior-Tombigbee Waterway Association meeting; competitive-intelligence value is the two named movable-structure fabricators (G&G Steel and Steward Machine) on the same waterway program."
   }
 ];
 
@@ -1206,7 +1223,8 @@ const OWNER_CONTACTS = {
   "Louisville & Indiana Railroad (Anacostia Rail Holdings)": { website: "lirailroad.com", phone: "(812) 288-0898" },
   "Gulf Coast Protection District (GCPD)": { website: "gcpdtexas.com", phone: "Contact via gcpdtexas.com/newsroom" },
   "PIDC / Philadelphia Authority for Industrial Development": { website: "pidcphila.com/contact-us", phone: "(215) 496-8020" },
-  "Virginia DOT (Hampton Roads District)": { website: "vdot.virginia.gov", phone: "(757) 956-3000" }
+  "Virginia DOT (Hampton Roads District)": { website: "vdot.virginia.gov", phone: "(757) 956-3000" },
+  "USACE Mobile District": { website: "sam.usace.army.mil", phone: "(251) 690-2505" }
 };
 
 const FIRM_CONTACTS = [
@@ -1242,7 +1260,8 @@ const FIRM_CONTACTS = [
   { match: "McMillen", name: "McMillen Incorporated", website: "mcmillen.com", phone: "(208) 342-4214" },
   { match: "George Harms Construction", name: "George Harms Construction Company", website: "ghcci.com", phone: "(732) 938-4004" },
   { match: "Jacobs Engineering", name: "Jacobs Engineering", website: "jacobs.com", phone: "(214) 638-0145" },
-  { match: "Lunda Construction", name: "Lunda Construction Company", website: "lundaconstruction.com", phone: "(715) 284-9491" }
+  { match: "Lunda Construction", name: "Lunda Construction Company", website: "lundaconstruction.com", phone: "(715) 284-9491" },
+  { match: "Steward Machine", name: "Steward Machine Company", website: "stewardmachine.com", phone: "(205) 849-3711" }
 ];
 
 function getOwnerContact(owner) {
