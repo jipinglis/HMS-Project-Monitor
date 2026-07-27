@@ -1,0 +1,26 @@
+name: HMS Nightly Date Update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 2 AM Eastern (6 AM UTC)
+  workflow_dispatch:       # Allows manual trigger from GitHub UI
+
+jobs:
+  update-date:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Update dashboard date
+        run: python nightly_update.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "HMS-Bot"
+          git config user.email "bot@hms-monitor.com"
+          git add spanwatch-dashboard.html
+          git diff --staged --quiet || (git commit -m "Daily HMS update $(date -u +'%Y-%m-%d')" && git push)
