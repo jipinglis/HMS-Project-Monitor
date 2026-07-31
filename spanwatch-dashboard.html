@@ -181,7 +181,7 @@
 // computed live from today's date — no manual removal needed, it ages out on
 // its own after a week.
 // ---------------------------------------------------------------------------
-const LAST_CHECKED = "2026-07-30";
+const LAST_CHECKED = "2026-07-31";
 
 const PROJECTS = [
   {
@@ -1220,6 +1220,23 @@ const PROJECTS = [
     dateAdded: "2026-07-30",
     lastUpdated: "2026-07-30",
     notes: "Major spillway modification at Prado Dam on the Santa Ana River, part of the larger Santa Ana River Mainstem flood-risk management program protecting Orange County from catastrophic flooding. Awarded to Barnard Construction Company (Bozeman, MT); scope includes significant work on the dam's spillway and outlet gate structures. Contract awarded March 2026 but physical construction not expected to begin until spring 2027, so classified here as Design/pre-construction; will move to Under Construction once fieldwork on the gate structures begins. Surfaced via industry trade press rather than a nightly federal search hit — one of the largest active USACE dam-gate-relevant contracts not previously tracked; flagged for continued monitoring of gate-specific subcontract awards."
+  },
+  {
+    id: "nj-newark-harrison-dock-bridge-2026",
+    name: "Dock Bridge Rehabilitation",
+    location: "Newark / Harrison, NJ (Passaic River)",
+    type: "Vertical Lift",
+    stage: "Under Construction",
+    owner: "Amtrak",
+    leadFirm: "Skanska USA (design-bid-build contractor); LiRo-Hill (project management)",
+    competingFirms: [],
+    estValue: "$242M total project; $87M Skanska design-bid-build contract; $188M FRA grant",
+    timeline: "Contracts awarded and announced July 2026; work commenced Q2 2026 with major work beginning by end of 2026; completion targeted late 2028",
+    source: "Amtrak Media / Railway Track and Structures",
+    sourceUrl: "https://media.amtrak.com/2026/07/amtrak-awards-contracts-and-prepares-to-begin-major-dock-bridge-rehabilitation-project/",
+    dateAdded: "2026-07-31",
+    lastUpdated: "2026-07-31",
+    notes: "Dock Bridge is a six-track, triple-span moveable lift bridge over the Passaic River between Newark and Harrison, NJ on Amtrak's Northeast Corridor, nearly a century old and serving 200,000+ daily riders across Amtrak, NJ Transit, and PATH. Scope includes decommissioning the three movable lift spans and securing them in a permanently fixed position (removing existing mechanical/electrical opening systems, jacking bridge counterweights, installing permanent counterweight supports) plus concrete pier rehabilitation — a decommissioning/fixed-in-place project rather than a like-for-like movable-span replacement. Funded by a $188M FRA grant plus NJ Transit/PATH/Amtrak contributions against a $242M total project cost; Skanska USA holds the $87M design-bid-build contract, LiRo-Hill holds project management/oversight. Flagged for competitive intelligence given Skanska's continued activity on heavy-movable-structure mechanical/electrical work, even though the end state removes the lift function from this particular bridge."
   }
 ];
 
@@ -1315,7 +1332,8 @@ const FIRM_CONTACTS = [
   { match: "Lunda Construction", name: "Lunda Construction Company", website: "lundaconstruction.com", phone: "(715) 284-9491" },
   { match: "Steward Machine", name: "Steward Machine Company", website: "stewardmachine.com", phone: "(205) 849-3711" },
   { match: "Abhe & Svoboda", name: "Abhe & Svoboda, Inc.", website: "abheonline.com", phone: "(952) 447-6025" },
-  { match: "Barnard Construction", name: "Barnard Construction Company", website: "barnard-inc.com", phone: "(406) 586-1995" }
+  { match: "Barnard Construction", name: "Barnard Construction Company", website: "barnard-inc.com", phone: "(406) 586-1995" },
+  { match: "LiRo-Hill", name: "LiRo-Hill (The LiRo Group)", website: "liro.com", phone: "(631) 249-6100" }
 ];
 
 function getOwnerContact(owner) {
