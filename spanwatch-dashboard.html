@@ -181,9 +181,26 @@
 // computed live from today's date — no manual removal needed, it ages out on
 // its own after a week.
 // ---------------------------------------------------------------------------
-const LAST_CHECKED = "2026-08-30";
+const LAST_CHECKED = "2026-08-31";
 
 const PROJECTS = [
+  {
+    id: "fl-bay-harbor-broad-causeway-2026",
+    name: "Broad Causeway (SR 922) Bridge Replacement",
+    location: "Bay Harbor Islands / North Miami, FL (Biscayne Bay, Miami-Dade County)",
+    type: "Bascule",
+    stage: "Planning / CIP",
+    owner: "Town of Bay Harbor Islands, FL",
+    leadFirm: "AtkinsRéalis (PD&E study / concept design consultant since August 2022)",
+    competingFirms: [],
+    estValue: "$5.5M PD&E study; ~$129M federal funds requested for construction; $1M state appropriation cleared in the FY2025-26 budget conference",
+    timeline: "FDOT/town PD&E study underway since November 2022; alternatives public hearing held June 24, 2024 presenting a 65-ft high-level FIXED bridge and a 40-ft MOVABLE (bascule) alternative, both with 75-year design lives; FHWA Limitation of Claims notice published November 2025; separate Town RFQ for design of the Indian Creek and Water bridges closed June 8, 2026; construction funding not yet secured",
+    source: "Town of Bay Harbor Islands PD&E project page / Florida Politics / AtkinsRéalis / Bid Banana (SR 922 solicitation)",
+    sourceUrl: "https://www.bayharborislands-fl.gov/444/Broad-Causeway-Bridge-Replacement-PDE-St",
+    dateAdded: "2026-08-31",
+    lastUpdated: "2026-08-31",
+    notes: "Added this check from the FDOT/SAM.gov movable-bridge sweep — not previously tracked. The existing Sheppard Broad Causeway bridge is a 73-year-old double-leaf bascule carrying SR 922 over Biscayne Bay between Bay Harbor Islands and North Miami, and is the only toll causeway in Miami-Dade owned by a municipality rather than the state. IMPORTANT CAVEAT ON MOVABLE STATUS: sources conflict. The FHWA Limitation of Claims notice and several AtkinsRéalis materials describe the selected concept as a 65-ft high-level FIXED bridge, while Florida Politics reporting on the FY2025-26 state appropriation describes the replacement as a 'new, movable, 65-foot-high bascule bridge.' The June 2024 public hearing formally carried BOTH a 65-ft fixed and a 40-ft movable bascule alternative forward, and no final locally-preferred alternative has been publicly confirmed as of this check. Tracked here as Bascule pending confirmation, on the same logic as the Longboat Pass entry — a movable outcome remains live and the decision point is near. SLN relevance is contingent: if the 40-ft movable alternative is selected, this becomes a full new-build double-leaf bascule in a salt-air marine environment (trunnion assemblies, span locks, counterweight anchorages, live-load shoes) — a strong prevailing-torque locknut case at roughly $129M of construction. If the fixed alternative is confirmed, drop it. ACTION: watch for (a) the town's locally-preferred-alternative announcement and (b) the outcome of the June 8, 2026 design RFQ, which should name the final design engineer. AtkinsRéalis is the incumbent consultant and the most likely route to specification influence."
+  },
   {
     id: "pe-souris-ferry-transfer-bridge-2026",
     name: "Souris Ferry Terminal Movable Transfer Bridge Replacement",
@@ -1534,6 +1551,7 @@ const OWNER_CONTACTS = {
   "MBTA": { website: "mbta.com", phone: "1-800-392-6100" },
   "NJ Transit": { website: "njtransit.com", phone: "(973) 275-5555" },
   "Florida DOT (District 1)": { website: "fdot.gov", phone: "(863) 519-2300" },
+  "Town of Bay Harbor Islands, FL": { website: "bayharborislands-fl.gov", phone: "(305) 866-6241" },
   "Cape May County Bridge Commission": { website: "capemaycountynj.gov/647/Bridge-Commission", phone: "(609) 465-7806" },
   "CSX / Amtrak (NY State funded)": { website: "railroads.dot.gov/crisi", phone: "(202) 493-6024" },
   "USACE Seattle District": { website: "nws.usace.army.mil", phone: "(206) 764-3742" },
@@ -1591,6 +1609,7 @@ const FIRM_CONTACTS = [
   { match: "VHB", name: "VHB", website: "vhb.com", phone: "(617) 924-1770" },
   { match: "Gannett Fleming", name: "Gannett Fleming", website: "gannettfleming.com", phone: "(717) 763-7211" },
   { match: "AECOM", name: "AECOM", website: "aecom.com", phone: "+1 (972) 788-1000" },
+  { match: "AtkinsRéalis", name: "AtkinsRéalis (formerly SNC-Lavalin / Atkins North America)", website: "atkinsrealis.com", phone: "(813) 282-7275" },
   { match: "Mott MacDonald", name: "Mott MacDonald", website: "mottmac.com", phone: "+44 20 7651 0300" },
   { match: "Ramboll", name: "Ramboll UK", website: "ramboll.co.uk", phone: "020 7631 5291" },
   { match: "Eadon Consulting", name: "Eadon Consulting", website: "eadonconsulting.co.uk", phone: "+44 114 399 0400" },
